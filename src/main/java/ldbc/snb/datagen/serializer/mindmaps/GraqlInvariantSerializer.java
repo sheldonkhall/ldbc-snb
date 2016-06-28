@@ -1,7 +1,9 @@
 package ldbc.snb.datagen.serializer.mindmaps;
 
-import io.mindmaps.graql.api.query.*;
+
+import io.mindmaps.graql.api.query.QueryBuilder;
 import io.mindmaps.graql.api.query.Var;
+import ldbc.snb.datagen.dictionary.Dictionaries;
 import ldbc.snb.datagen.objects.Organization;
 import ldbc.snb.datagen.objects.Place;
 import ldbc.snb.datagen.objects.Tag;
@@ -20,8 +22,9 @@ import static io.mindmaps.graql.api.query.QueryBuilder.var;
 public class GraqlInvariantSerializer extends InvariantSerializer {
 
     final static String filePath = "./ldbc-snb-data.gql";
-    final static int batchSize = 10;
-    final static int sleep = 3000;
+    final static int batchSize = 40;
+    final static int sleep = 200;
+
 
     private List<Var> varList;
     private QueryBuilder queryBuilder;
@@ -54,7 +57,20 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
 
     @Override
     public void close() {
+        endTime = System.currentTimeMillis();
+        try {
+            String graqlString = queryBuilder.insert(varList).toString();
+            GraqlPersonSerializer.sendToEngine(graqlString, sleep);
 
+            graqlString = graqlString.replaceAll("; ", ";\n");
+            bufferedWriter.write(graqlString.substring(7));
+            bufferedWriter.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("========================  TIME USED INVARIANT  ========================");
+        System.out.println(endTime - startTime + " ms");
     }
 
     @Override
@@ -74,8 +90,8 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
                 e.printStackTrace();
             }
         }
-
         String varNamePlace = place.getType() + "-" + place.getId();
+        System.out.println("SERIALISING PLACE ===> "+ varNamePlace);
         varList.add(var(varNamePlace).isa(place.getType()).id(varNamePlace).value(place.getName()));
 
         String varNameResource = place.getType() + "_name_" + place.getName().hashCode();
@@ -85,8 +101,23 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
                 .rel("entity-value", var(varNameResource))
                 .rel("entity-target", var(varNamePlace)));
 
+        // relation is-part-of
+        if (place.getType().equals(Place.CITY)) {
+            String varNameLocation2 = Place.COUNTRY + "-" + Dictionaries.places.belongsTo(place.getId());
+            varList.add(var(varNameLocation2).isa(Place.COUNTRY).id(varNameLocation2));
 
-        //TODO: is part of
+            varList.add(var().isa("is-part-of")
+                    .rel("location1", var(varNamePlace))
+                    .rel("location2", var(varNameLocation2)));
+
+        } else if (place.getType().equals(Place.COUNTRY)) {
+            String varNameLocation2 = Place.CONTINENT + "-" + Dictionaries.places.belongsTo(place.getId());
+            varList.add(var(varNameLocation2).isa(Place.CONTINENT).id(varNameLocation2));
+
+            varList.add(var().isa("is-part-of")
+                    .rel("location1", var(varNamePlace))
+                    .rel("location2", var(varNameLocation2)));
+        }
     }
 
     @Override
@@ -108,6 +139,7 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
         }
 
         String varNameOrganization = organization.type.toString() + organization.id;
+        System.out.println("SERIALISING ORGANIZATION ===> "+ varNameOrganization);
         varList.add(var(varNameOrganization).isa(organization.type.toString())
                 .id(varNameOrganization).value(organization.name));
 
@@ -118,8 +150,23 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
                 .rel("entity-value", var(varNameResource))
                 .rel("entity-target", var(varNameOrganization)));
 
-        //TODO: location
+        // relation location-of-subject
+        if (organization.type.toString().equals("university")) {
+            String varNamePlace = "city-" + organization.location;
+            varList.add(var(varNamePlace).isa("city").id(varNamePlace));
 
+            varList.add(var().isa("located-in")
+                    .rel("subject-with-location", var(varNameOrganization))
+                    .rel("location-of-subject", var(varNamePlace)));
+
+        } else if (organization.type.toString().equals("company")) {
+            String varNamePlace = "country-" + organization.location;
+            varList.add(var(varNamePlace).isa("country").id(varNamePlace));
+
+            varList.add(var().isa("located-in")
+                    .rel("subject-with-location", var(varNameOrganization))
+                    .rel("location-of-subject", var(varNamePlace)));
+        }
     }
 
     @Override
@@ -141,10 +188,13 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
         }
 
         String varNameTagClass = "tag-class-" + tagClass.id;
-        varList.add(var(varNameTagClass).isa("tag-class").id(varNameTagClass).value(tagClass.name));
+        System.out.println("SERIALISING TAG CLASS ===> "+ varNameTagClass);
+        varList.add(var(varNameTagClass).isa("tag-class").id(varNameTagClass)
+                .value(Long.toString(tagClass.name.hashCode())));
 
         String varNameResource = varNameTagClass + "_name_" + tagClass.name.hashCode();
-        varList.add(var(varNameResource).isa("name").value(tagClass.name));
+        varList.add(var(varNameResource).isa("name")
+                .value(Long.toString(tagClass.name.hashCode())));
 
         varList.add(var().isa("entity-has-resource")
                 .rel("entity-value", var(varNameResource))
@@ -179,10 +229,13 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
         }
 
         String varNameTag = "tag-" + tag.id;
-        var(varNameTag).isa("tag").id(varNameTag).value(tag.name);
+        System.out.println("SERIALISING TAG ===> "+ varNameTag);
+        varList.add(var(varNameTag).isa("tag").id(varNameTag)
+                .value(Long.toString(tag.name.hashCode())));
 
         String varNameResource = varNameTag + "_name_" + tag.name.hashCode();
-        varList.add(var(varNameResource).isa("name").value(tag.name));
+        varList.add(var(varNameResource).isa("name")
+                .value(Long.toString(tag.name.hashCode())));
 
         varList.add(var().isa("entity-has-resource")
                 .rel("entity-value", var(varNameResource))

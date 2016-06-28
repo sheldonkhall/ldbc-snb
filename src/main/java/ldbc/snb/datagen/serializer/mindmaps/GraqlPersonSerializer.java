@@ -64,7 +64,7 @@ public class GraqlPersonSerializer extends PersonSerializer {
     }
 
     public static void sendToEngine(String graqlQuery, int sleep) throws IOException {
-        System.out.println("graqlQuery = " + graqlQuery);
+//        System.out.println("graqlQuery = " + graqlQuery);
         try {
             HttpURLConnection connection = buildConnectionPost(POST_TRANSACTION_REQUEST_URL, graqlQuery);
 
@@ -129,7 +129,8 @@ public class GraqlPersonSerializer extends PersonSerializer {
             e.printStackTrace();
         }
 
-        System.out.println("========================  TIME USED ========================");
+        System.out.println("========================  TIME USED PERSON  ========================");
+
         System.out.println(endTime - startTime + " ms");
     }
 
@@ -163,7 +164,8 @@ public class GraqlPersonSerializer extends PersonSerializer {
 
         String varNamePerson = "person-" + Long.toString(p.accountId());
         if (!ids.contains(varNamePerson)) {
-            varList.add(var(varNamePerson).isa("person").id(varNamePerson).value(p.firstName() + " " + p.lastName()));
+            varList.add(var(varNamePerson)
+                    .isa("person").id(varNamePerson).value(p.firstName() + " " + p.lastName()));
 //            ids.add(varNamePerson);
         } else {
             varList.add(var(varNamePerson).id(varNamePerson).value(p.firstName() + " " + p.lastName()));

@@ -21,7 +21,6 @@ target/
 *.pyc
 
 # IntelliJ stuff
-.idea
 ldbc_socialnet_dbgen.iml
 
 #other stuff
@@ -42,3 +41,4 @@ hs_err_pid*
 
 # junk files #
 *~
+
