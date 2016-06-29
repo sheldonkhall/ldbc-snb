@@ -26,7 +26,7 @@ import static io.mindmaps.graql.api.query.QueryBuilder.var;
 
 public class GraqlPersonSerializer extends PersonSerializer {
 
-    final static String POST_TRANSACTION_REQUEST_URL = "http://10.0.1.9:8080/transaction";
+    final static String POST_TRANSACTION_REQUEST_URL = "http://10.0.1.28:8080/transaction";
     final static String filePath = "./ldbc-snb-data.gql";
     final static int batchSize = 10;
     final static int sleep = 2500;
