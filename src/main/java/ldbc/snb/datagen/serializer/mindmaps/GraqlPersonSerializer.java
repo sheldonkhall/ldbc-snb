@@ -81,6 +81,13 @@ public class GraqlPersonSerializer extends PersonSerializer {
         }
     }
 
+    public String formatString(Object resourceValue){
+        // escape all double quotes inside strings
+        String resource = (String) resourceValue;
+        resource = resource.replace("\\", "");
+        resource = resource.replace("\"", "\\\"");
+        return resource;
+    }
     private void personWithResource(String varNamePerson, String isa,
                                     String resourceValue) {
         String varNameResource = varNamePerson + "_" + isa + "_" + resourceValue.hashCode();

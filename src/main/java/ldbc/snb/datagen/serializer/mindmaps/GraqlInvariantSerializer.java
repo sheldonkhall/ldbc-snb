@@ -190,11 +190,11 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
         String varNameTagClass = "tag-class-" + tagClass.id;
         System.out.println("SERIALISING TAG CLASS ===> "+ varNameTagClass);
         varList.add(var(varNameTagClass).isa("tag-class").id(varNameTagClass)
-                .value(Long.toString(tagClass.name.hashCode())));
+                .value(tagClass.name));
 
         String varNameResource = varNameTagClass + "_name_" + tagClass.name.hashCode();
         varList.add(var(varNameResource).isa("name")
-                .value(Long.toString(tagClass.name.hashCode())));
+                .value(tagClass.name));
 
         varList.add(var().isa("entity-has-resource")
                 .rel("entity-value", var(varNameResource))
@@ -231,11 +231,11 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
         String varNameTag = "tag-" + tag.id;
         System.out.println("SERIALISING TAG ===> "+ varNameTag);
         varList.add(var(varNameTag).isa("tag").id(varNameTag)
-                .value(Long.toString(tag.name.hashCode())));
+                .value(tag.name));
 
         String varNameResource = varNameTag + "_name_" + tag.name.hashCode();
         varList.add(var(varNameResource).isa("name")
-                .value(Long.toString(tag.name.hashCode())));
+                .value(tag.name));
 
         varList.add(var().isa("entity-has-resource")
                 .rel("entity-value", var(varNameResource))

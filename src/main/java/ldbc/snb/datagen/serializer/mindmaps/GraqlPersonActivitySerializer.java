@@ -86,19 +86,19 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
             ArrayList<Var> currentList = new ArrayList<>();
             int sizeRelationships = relationshipsList.size();
             for (List<Var> current : relationshipsList) {
-                System.out.println("==================  SENDING LIST N " +
+                System.out.println("==================  ADDING LIST N " +
                         i + "/" + sizeRelationships + "=======================");
                 if (++i % batchSize == 0) {
-
+                    try {
+                        sendToEngine(qb.insert(currentList).toString(), sleep);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     currentList = new ArrayList<>();
 
                 }
                 current.forEach(currentList::add);
-                try {
-                    sendToEngine(qb.insert(currentList).toString(), sleep);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
             }
         } catch (IOException e) {
             e.printStackTrace();
