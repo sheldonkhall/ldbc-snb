@@ -129,7 +129,8 @@ public class GraqlPersonSerializer extends PersonSerializer {
             sendToEngine(graqlString, sleep);
 
             graqlString = graqlString.replaceAll("; ", ";\n");
-            bufferedWriter.write(graqlString.substring(7));
+            bufferedWriter.write(graqlString.substring(7) + "\n");
+
             bufferedWriter.close();
 
         } catch (IOException e) {
@@ -150,8 +151,7 @@ public class GraqlPersonSerializer extends PersonSerializer {
         serializedPersons++;
         if (serializedPersons % batchSize == 0) {
             try {
-                bufferedWriter.write("\n# a new batch\n");
-
+//                bufferedWriter.write("\n# a new batch\n");
                 String graqlString = queryBuilder.insert(varList).toString();
                 sendToEngine(graqlString, sleep);
 

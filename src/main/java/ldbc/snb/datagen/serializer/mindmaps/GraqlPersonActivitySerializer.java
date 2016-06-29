@@ -7,7 +7,9 @@ import ldbc.snb.datagen.objects.*;
 import ldbc.snb.datagen.serializer.PersonActivitySerializer;
 import org.apache.hadoop.conf.Configuration;
 
+import java.io.BufferedWriter;
 import java.io.DataOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -19,13 +21,15 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
 
     final static String POST_TRANSACTION_REQUEST_URL = "http://10.0.1.9:8080/transaction";
     final static int batchSize = 20;
-    final static int sleep = 100;
+    final static int sleep = 200;
 
     private List<Var> entitiesList;
     private List<List<Var>> relationshipsList;
     private QueryBuilder qb;
     private int serializedEntities;
     private Set<String> messagesSent;
+
+    private BufferedWriter bufferedWriter;
 
     public static HttpURLConnection buildConnectionPost(String engineUrlPost, String content) {
         try {
@@ -73,6 +77,11 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
         serializedEntities = 0;
         messagesSent = new HashSet<>();
 
+        try {
+            bufferedWriter = new BufferedWriter(new FileWriter(GraqlPersonSerializer.filePath, true));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -80,7 +89,11 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
     public void close() {
         try {
             entitiesList.forEach(System.out::println);
-            sendToEngine(qb.insert(entitiesList).toString(), sleep);
+            String graqlString = qb.insert(entitiesList).toString();
+            sendToEngine(graqlString, sleep);
+
+            graqlString = graqlString.replaceAll("; ", ";\n");
+            bufferedWriter.write(graqlString.substring(7) + "\n");
 
             int i = 0;
             ArrayList<Var> currentList = new ArrayList<>();
@@ -90,7 +103,12 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
                         i + "/" + sizeRelationships + "=======================");
                 if (++i % batchSize == 0) {
                     try {
-                        sendToEngine(qb.insert(currentList).toString(), sleep);
+                        graqlString = qb.insert(currentList).toString();
+                        sendToEngine(graqlString, sleep);
+
+                        graqlString = graqlString.replaceAll("; ", ";\n");
+                        bufferedWriter.write(graqlString.substring(7) + "\n");
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -98,8 +116,10 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
 
                 }
                 current.forEach(currentList::add);
-
             }
+            bufferedWriter.write("\n");
+            bufferedWriter.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -169,7 +189,11 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
     protected void serialize(final Post post) {
         if (++serializedEntities % batchSize == 0) {
             try {
-                sendToEngine(qb.insert(entitiesList).toString(), 200);
+                String graqlString = qb.insert(entitiesList).toString();
+                sendToEngine(graqlString, sleep);
+
+                graqlString = graqlString.replaceAll("; ", ";\n");
+                bufferedWriter.write(graqlString.substring(7) + "\n");
                 entitiesList = new ArrayList<>();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -216,7 +240,7 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
         ArrayList<Var> currentList = new ArrayList<>();
 
         currentList.add(var("forum-" + post.forumId()).isa("forum").id("forum-" + post.forumId()));
-        currentList.add(var("message-" + post.messageId()).id("message-" + post.messageId()));
+        currentList.add(var("message-" + post.messageId()).isa("post").id("message-" + post.messageId()));
         currentList.add(var().isa("container-of")
                 .rel("post-with-container", var(messageId))
                 .rel("container-of-post", var("forum-" + post.forumId())));
@@ -236,7 +260,12 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
     protected void serialize(final Comment comment) {
         if (++serializedEntities % batchSize == 0) {
             try {
-                sendToEngine(qb.insert(entitiesList).toString(), 200);
+                String graqlString = qb.insert(entitiesList).toString();
+                sendToEngine(graqlString, sleep);
+
+                graqlString = graqlString.replaceAll("; ", ";\n");
+                bufferedWriter.write(graqlString.substring(7) + "\n");
+
                 entitiesList = new ArrayList<>();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -253,7 +282,7 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
 
         ArrayList<Var> currentList = new ArrayList<>();
 
-        currentList.add(var(commentId).id("message-" + comment.messageId()));
+        currentList.add(var(commentId).isa("comment").id("message-" + comment.messageId()));
         if (comment.replyOf() == comment.postId()) {
             //comment to a post
             currentList.add(var("message-" + Long.toString(comment.postId())).id("message-" + Long.toString(comment.postId())));

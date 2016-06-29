@@ -48,8 +48,7 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
         varList = new ArrayList<>();
 
         try {
-            bufferedWriter = new BufferedWriter(new FileWriter(filePath, false));
-            bufferedWriter.write("insert\n");
+            bufferedWriter = new BufferedWriter(new FileWriter(filePath, true));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -63,7 +62,9 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
             GraqlPersonSerializer.sendToEngine(graqlString, sleep);
 
             graqlString = graqlString.replaceAll("; ", ";\n");
-            bufferedWriter.write(graqlString.substring(7));
+            bufferedWriter.write(graqlString.substring(7) + "\n");
+
+            bufferedWriter.write("\n");
             bufferedWriter.close();
 
         } catch (IOException e) {
@@ -78,13 +79,12 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
         serializedEntities++;
         if (serializedEntities % batchSize == 0) {
             try {
-                bufferedWriter.write("\n# a new batch\n");
-
+//                bufferedWriter.write("\n# a new batch\n");
                 String graqlString = queryBuilder.insert(varList).toString();
                 GraqlPersonSerializer.sendToEngine(graqlString, sleep);
 
                 graqlString = graqlString.replaceAll("; ", ";\n");
-                bufferedWriter.write(graqlString.substring(7));
+                bufferedWriter.write(graqlString.substring(7) + "\n");
                 varList = new ArrayList<>();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -131,7 +131,7 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
                 GraqlPersonSerializer.sendToEngine(graqlString, sleep);
 
                 graqlString = graqlString.replaceAll("; ", ";\n");
-                bufferedWriter.write(graqlString.substring(7));
+                bufferedWriter.write(graqlString.substring(7) + "\n");
                 varList = new ArrayList<>();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -180,7 +180,7 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
                 GraqlPersonSerializer.sendToEngine(graqlString, sleep);
 
                 graqlString = graqlString.replaceAll("; ", ";\n");
-                bufferedWriter.write(graqlString.substring(7));
+                bufferedWriter.write(graqlString.substring(7) + "\n");
                 varList = new ArrayList<>();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -221,7 +221,7 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
                 GraqlPersonSerializer.sendToEngine(graqlString, sleep);
 
                 graqlString = graqlString.replaceAll("; ", ";\n");
-                bufferedWriter.write(graqlString.substring(7));
+                bufferedWriter.write(graqlString.substring(7) + "\n");
                 varList = new ArrayList<>();
             } catch (IOException e) {
                 e.printStackTrace();
