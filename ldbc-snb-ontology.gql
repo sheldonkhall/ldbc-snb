@@ -41,9 +41,9 @@ creation-date plays-role relation-value;
 
 "location" isa role-type, is-abstract;
 
-"location1" ako location;
-"location2" ako location;
-"is-part-of" isa relation-type, has-role location1, has-role location2;
+"member-location" ako location;
+"container-location" ako location;
+"is-part-of" isa relation-type, has-role member-location, has-role container-location;
 place plays-role location;
 
 # organization
