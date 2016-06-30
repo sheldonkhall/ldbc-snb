@@ -26,7 +26,7 @@ import static io.mindmaps.graql.api.query.QueryBuilder.var;
 
 public class GraqlPersonSerializer extends PersonSerializer {
 
-    final static String POST_TRANSACTION_REQUEST_URL = "http://10.0.1.9:8080/transaction";
+    final static String POST_TRANSACTION_REQUEST_URL = "http://10.0.1.28:8080/transaction";
     final static String filePath = "./ldbc-snb-data.gql";
     final static int batchSize = 10;
     final static int sleep = 2500;
@@ -81,6 +81,13 @@ public class GraqlPersonSerializer extends PersonSerializer {
         }
     }
 
+    public String formatString(Object resourceValue){
+        // escape all double quotes inside strings
+        String resource = (String) resourceValue;
+        resource = resource.replace("\\", "");
+        resource = resource.replace("\"", "\\\"");
+        return resource;
+    }
     private void personWithResource(String varNamePerson, String isa,
                                     String resourceValue) {
         String varNameResource = varNamePerson + "_" + isa + "_" + resourceValue.hashCode();
@@ -122,7 +129,8 @@ public class GraqlPersonSerializer extends PersonSerializer {
             sendToEngine(graqlString, sleep);
 
             graqlString = graqlString.replaceAll("; ", ";\n");
-            bufferedWriter.write(graqlString.substring(7));
+            bufferedWriter.write(graqlString.substring(7) + "\n");
+
             bufferedWriter.close();
 
         } catch (IOException e) {
@@ -143,8 +151,7 @@ public class GraqlPersonSerializer extends PersonSerializer {
         serializedPersons++;
         if (serializedPersons % batchSize == 0) {
             try {
-                bufferedWriter.write("\n# a new batch\n");
-
+//                bufferedWriter.write("\n# a new batch\n");
                 String graqlString = queryBuilder.insert(varList).toString();
                 sendToEngine(graqlString, sleep);
 
