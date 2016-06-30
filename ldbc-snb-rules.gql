@@ -1,0 +1,13 @@
+insert
+
+"inference-rule" isa rule-type;
+
+"R1" isa inference-rule,
+lhs "select $x, $z where $x isa university;$y isa city;$z isa country;
+($x, $y) isa located-in;
+($y, $z) isa is-part-of",
+rhs "select $x, $z where ($x, $z) isa located-in";
+
+"R2" isa inference-rule,
+lhs "select $x, $y where ($x, $y) isa forum-moderated-by",
+rhs "select $x, $y where ($x, $y) isa forum-membership";
