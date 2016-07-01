@@ -2,12 +2,71 @@ insert
 
 "inference-rule" isa rule-type;
 
+#transitivity of resides & sublocate
 "R1" isa inference-rule,
-lhs "select $x, $z where $x isa university;$y isa city;$z isa country;
-($x, $y) isa located-in;
-($y, $z) isa is-part-of",
-rhs "select $x, $z where ($x, $z) isa located-in";
+lhs "select $x, $z where
+($x, $y) isa resides;
+($y, $z) isa sublocate",
+rhs "select $x, $z where ($x, $z) isa resides";
 
+#transitivity of sublocate
 "R2" isa inference-rule,
-lhs "select $x, $y where ($x, $y) isa forum-moderated-by",
-rhs "select $x, $y where ($x, $y) isa forum-membership";
+lhs "select $x, $z where
+($x, $y) isa sublocate;
+($y, $z) isa sublocate",
+rhs "select $x, $z where ($x, $z) isa sublocate";
+
+"R3" isa inference-rule,
+lhs "select $x, $y where ($x, $y) isa moderates",
+rhs "select $x, $y where ($x, $y) isa membership";
+
+"R4" isa inference-rule,
+lhs "select $x, $y where
+$x isa person;
+$t1 isa tag;$t1 value 'Ennio_Morricone';
+$t2 isa tag;$t2 value 'John_Wayne';
+($x, $t1) isa tagging;
+($x, $t2) isa tagging;
+$y isa product;
+$y value 'The Good, the Bad and the Ugly'",
+rhs "select $x, $y where
+$y value 'The Good, the Bad and the Ugly';
+($x, $y) isa recommendation";
+
+"R5" isa inference-rule,
+lhs "select $x, $y where
+$x isa person;
+$t1 isa tag;$t1 value 'Ozzy_Osbourne';
+$t2 isa tag;$t2 value 'Rising_Force';
+($x, $t1) isa tagging;
+($x, $t2) isa tagging;
+$y isa product;
+{$y value 'Ozzy Osbourne - Blizzard of Oz'} or {$y value 'Fender Stratocaster'}",
+rhs "select $x, $y where
+{$y value 'Ozzy Osbourne - Blizzard of Oz'} or {$y value 'Fender Stratocaster'};
+($x, $y) isa recommendation";
+
+"R6" isa inference-rule,
+lhs "select $x, $y where
+$x isa person;$t isa tag;
+($x, $t) isa tagging;
+$tt isa category;$tt value 'writers';
+($t, $tt) isa grouping;
+$y isa product;
+$yt isa category;$yt value 'book';
+($y, $yt) isa typing",
+rhs "select $x, $y where
+($x, $y) isa recommendation";
+
+"R7" isa inference-rule,
+lhs "select $x, $y where
+$x isa person;$x has gender 'male';
+#$x has age < 45;
+#$y has max-age < 45;
+#$x has age > 18;
+#$y has min-age >18;
+$y isa product;
+$z isa country;$z value 'Italy';
+($y, $z) isa made-in"
+rhs "select $x, $y where
+($x, $y) isa recommendation";
