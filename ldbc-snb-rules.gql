@@ -30,27 +30,23 @@ $t2 isa tag;$t2 value 'John_Wayne';
 $y isa product;
 $y value 'The Good, the Bad and the Ugly'",
 rhs "select $x, $y where
-$y value 'The Good, the Bad and the Ugly';
 ($x, $y) isa recommendation";
 
 "R5" isa inference-rule,
 lhs "select $x, $y where
 $x isa person;
-$t1 isa tag;$t1 value 'Ozzy_Osbourne';
-$t2 isa tag;$t2 value 'Rising_Force';
-($x, $t1) isa tagging;
-($x, $t2) isa tagging;
+$t isa tag;{$t value 'Ozzy_Osbourne'} or {$t value 'Rising_Force'};
+($x, $t) isa tagging;
 $y isa product;
 {$y value 'Ozzy Osbourne - Blizzard of Oz'} or {$y value 'Fender Stratocaster'}",
 rhs "select $x, $y where
-{$y value 'Ozzy Osbourne - Blizzard of Oz'} or {$y value 'Fender Stratocaster'};
 ($x, $y) isa recommendation";
 
 "R6" isa inference-rule,
 lhs "select $x, $y where
 $x isa person;$t isa tag;
 ($x, $t) isa tagging;
-$tt isa category;$tt value 'writers';
+$tt isa category;$tt value 'Writer';
 ($t, $tt) isa grouping;
 $y isa product;
 $yt isa category;$yt value 'book';
@@ -68,5 +64,25 @@ $x isa person;$x has gender 'male';
 $y isa product;
 $z isa country;$z value 'Italy';
 ($y, $z) isa made-in"
+rhs "select $x, $y where
+($x, $y) isa recommendation";
+
+"R8" isa inference-rule,
+lhs "select $x, $y where
+$x isa person;
+$t isa tag;{$t value 'Ludwig_van_Beethoven'} or {$t value 'Johann_Sebastian_Bach'} or {$t value 'Wolfgang_Amadeus_Mozart'};
+($x, $t) isa tagging;
+$y isa product;
+$y value 'Chopin - Nocturnes'",
+rhs "select $x, $y where
+($x, $y) isa recommendation";
+
+"R9" isa inference-rule,
+lhs "select $x, $y where
+$x isa person;
+$t isa tag;$t value 'Roger_Waters';
+($x, $t) isa tagging;
+$y isa product;
+$y value 'Pink Floyd - The Wall'",
 rhs "select $x, $y where
 ($x, $y) isa recommendation";
