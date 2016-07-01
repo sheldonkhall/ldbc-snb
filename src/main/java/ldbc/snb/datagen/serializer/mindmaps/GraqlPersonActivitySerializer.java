@@ -114,23 +114,23 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
 
         //  relationshipsList.add(var(varForumId).id(varForumId));
 
-        entitiesList.add(var(varForumId).isa("forum").id(varForumId));
+        entitiesList.add(var(varForumId).isa("forum").id(varForumId).value(forum.title()));
 
         System.out.println("SERIALISED FORUM ===> " + varForumId);
 
         entitiesList.add(var("forumtitle-" + Integer.toString(forum.title().hashCode())).isa("name").value(forum.title()));
 
-        entitiesList.add(var().isa("entity-has-resource")
-                .rel("entity-target", var(varForumId))
-                .rel("entity-value", var("forumtitle-" + Integer.toString(forum.title().hashCode()))));
+        entitiesList.add(var().isa("entity-resource")
+                .rel("entity-resource-owner", var(varForumId))
+                .rel("entity-resource-value", var("forumtitle-" + Integer.toString(forum.title().hashCode()))));
 
         //================ creation date =======================
 
         entitiesList.add(var(Integer.toString(dateString.hashCode())).isa("creation-date").value(dateString));
 
-        entitiesList.add(var().isa("forum-has-resource")
-                .rel("forum-target", var(varForumId))
-                .rel("forum-value", var(Integer.toString(dateString.hashCode()))));
+        entitiesList.add(var().isa("forum-resource")
+                .rel("forum-resource-owner", var(varForumId))
+                .rel("forum-resource-value", var(Integer.toString(dateString.hashCode()))));
 
         //================= forum-with-moderator ==============
 
@@ -138,9 +138,9 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
 
         entitiesList.add(var(moderatorId).id(moderatorId));
 
-        entitiesList.add(var().isa("forum-moderated-by")
-                .rel("forum-moderator", var(moderatorId))
-                .rel("forum-with-moderator", var(varForumId)));
+        entitiesList.add(var().isa("moderates")
+                .rel("moderator", var(moderatorId))
+                .rel("moderated", var(varForumId)));
 
 
         //Associate tags to the current forum
@@ -148,10 +148,9 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
             String tagId = "tag-" + Integer.toString(i);
             entitiesList.add(var(tagId).isa("tag").id(tagId));
 
-            entitiesList.add(
-                    var().isa("with-tag")
-                            .rel("subject-with-tag", var(varForumId))
-                            .rel("tag-of-subject", var(tagId))
+            entitiesList.add(var().isa("tagging")
+                            .rel("tagged-subject", var(varForumId))
+                            .rel("subject-tag", var(tagId))
             );
         }
 
@@ -185,17 +184,17 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
 
         entitiesList.add(var("country-" + post.countryId()).isa("country").id("country-" + post.countryId()));
 
-        entitiesList.add(var().isa("located-in")
-                .rel("subject-with-location", var(messageId))
-                .rel("location-of-subject", var("country-" + post.countryId())));
+        entitiesList.add(var().isa("resides")
+                .rel("located-subject", var(messageId))
+                .rel("subject-location", var("country-" + post.countryId())));
 
         // ====== MESSAGE HAS CREATOR =====================
 
         entitiesList.add(var("person-" + post.author().accountId()).id("person-" + post.author().accountId()));
 
-        entitiesList.add(var().isa("creates")
-                .rel("message-created", var(messageId))
-                .rel("message-creator", var("person-" + post.author().accountId())));
+        entitiesList.add(var().isa("writes")
+                .rel("written", var(messageId))
+                .rel("writer", var("person-" + post.author().accountId())));
 
         // ====== MESSAGE HAS TAGS =====================
 
@@ -203,9 +202,9 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
         for (Integer t : post.tags()) {
             entitiesList.add(var("tag-" + Integer.toString(t)).isa("tag").id("tag-" + Integer.toString(t)));
 
-            entitiesList.add(var().isa("with-tag")
-                    .rel("subject-with-tag", var(messageId))
-                    .rel("tag-of-subject", var("tag-" + Integer.toString(t))));
+            entitiesList.add(var().isa("tagging")
+                    .rel("tagged-subject", var(messageId))
+                    .rel("subject-tag", var("tag-" + Integer.toString(t))));
         }
 
         // ====== POST CONTAINED IN FORUM =====================
@@ -213,9 +212,9 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
 
         currentList.put("forum-" + post.forumId(), var("forum-" + post.forumId()).isa("forum").id("forum-" + post.forumId()));
         currentList.put(messageId, var(messageId).id(messageId));
-        currentList.put("relationship", var().isa("container-of")
-                .rel("post-with-container", var(messageId))
-                .rel("container-of-post", var("forum-" + post.forumId())));
+        currentList.put("relationship", var().isa("containing")
+                .rel("contained-post", var(messageId))
+                .rel("post-container", var("forum-" + post.forumId())));
         relationshipsList.add(currentList);
 
         // ====== POST LANGUAGE =====================
@@ -224,9 +223,9 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
 
         entitiesList.add(var(language).isa("language").id(language));
 
-        entitiesList.add(var().isa("post-has-resource")
-                .rel("post-target", var(messageId))
-                .rel("post-value", var(language)));
+        entitiesList.add(var().isa("post-resource")
+                .rel("post-resource-target", var(messageId))
+                .rel("post-resource-value", var(language)));
     }
 
     protected void serialize(final Comment comment) {
@@ -259,18 +258,18 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
             //comment to a post
             currentList.put("message-" + Long.toString(comment.postId()), var("message-" + Long.toString(comment.postId())).id("message-" + Long.toString(comment.postId())));
 
-            currentList.put("relationship", var().isa("reply-of")
-                    .rel("reply", var(commentId))
-                    .rel("message-with-reply", var("message-" + Long.toString(comment.postId()))));
+            currentList.put("relationship", var().isa("reply")
+                    .rel("reply-content", var(commentId))
+                    .rel("reply-owner", var("message-" + Long.toString(comment.postId()))));
 
         } else {
 
             //comment to a comment
             currentList.put("message-" + Long.toString(comment.replyOf()), var("message-" + Long.toString(comment.replyOf())).id("message-" + Long.toString(comment.replyOf())));
 
-            currentList.put("relationship", var().isa("reply-of")
-                    .rel("reply", var(commentId))
-                    .rel("message-with-reply", var("message-" + Long.toString(comment.replyOf()))));
+            currentList.put("relationship", var().isa("reply")
+                    .rel("reply-content", var(commentId))
+                    .rel("reply-owner", var("message-" + Long.toString(comment.replyOf()))));
         }
         relationshipsList.add(currentList);
 
@@ -278,17 +277,17 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
 
         entitiesList.add(var("country-" + comment.countryId()).isa("country").id("country-" + comment.countryId()));
 
-        entitiesList.add(var().isa("located-in")
-                .rel("subject-with-location", var(commentId))
-                .rel("location-of-subject", var("country-" + comment.countryId())));
+        entitiesList.add(var().isa("resides")
+                .rel("located-subject", var(commentId))
+                .rel("subject-location", var("country-" + comment.countryId())));
 
         // ====== MESSAGE HAS CREATOR =====================
 
         entitiesList.add(var("person-" + comment.author().accountId()).id("person-" + comment.author().accountId()));
 
-        entitiesList.add(var().isa("creates")
-                .rel("message-created", var(commentId))
-                .rel("message-creator", var("person-" + comment.author().accountId())));
+        entitiesList.add(var().isa("writes")
+                .rel("written", var(commentId))
+                .rel("writer", var("person-" + comment.author().accountId())));
 
         // ====== MESSAGE HAS TAGS =====================
 
@@ -296,9 +295,9 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
         for (Integer t : comment.tags()) {
             entitiesList.add(var("tag-" + Integer.toString(t)).isa("tag").id("tag-" + Integer.toString(t)));
 
-            entitiesList.add(var().isa("with-tag")
-                    .rel("subject-with-tag", var(commentId))
-                    .rel("tag-of-subject", var("tag-" + Integer.toString(t))));
+            entitiesList.add(var().isa("tagging")
+                    .rel("tagged-subject", var(commentId))
+                    .rel("subject-tag", var("tag-" + Integer.toString(t))));
         }
     }
 
@@ -319,16 +318,16 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
         currentList.put("penis", var("person-" + Long.toString(membership.person().accountId())).id("person-" + Long.toString(membership.person().accountId())));
         currentList.put("fuckyou", var("forum-" + Long.toString(membership.forumId())).isa("forum").id("forum-" + Long.toString(membership.forumId())));
 
-        currentList.put("ihatethis", var("forum-membership-" + Long.toString(membership.person().accountId()) + Long.toString(membership.forumId())).isa("forum-membership")
-                .rel("forum-with-member", var("forum-" + Long.toString(membership.forumId())))
+        currentList.put("ihatethis", var("forum-membership-" + Long.toString(membership.person().accountId()) + Long.toString(membership.forumId())).isa("membership")
+                .rel("membered-forum", var("forum-" + Long.toString(membership.forumId())))
                 .rel("forum-member", var("person-" + Long.toString(membership.person().accountId()))));
 
         String relationVariableValue = "joinDate-" + Dictionaries.dates.formatDateTime(membership.creationDate()).hashCode();
         currentList.put("tomorrow", var(relationVariableValue).isa("creation-date").value(Dictionaries.dates.formatDateTime(membership.creationDate())));
 
-        currentList.put("today", var().isa("relation-has-resource")
-                .rel("relation-value", var(relationVariableValue))
-                .rel("relation-target", var("forum-membership-" + Long.toString(membership.person().accountId()) + Long.toString(membership.forumId()))));
+        currentList.put("today", var().isa("relation-resource")
+                .rel("relation-resource-value", var(relationVariableValue))
+                .rel("relation-resource-owner", var("forum-membership-" + Long.toString(membership.person().accountId()) + Long.toString(membership.forumId()))));
         relationshipsList.add(currentList);
 
     }
@@ -351,15 +350,15 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
                 .id("message-" + Long.toString(like.messageId)));
 
         currentList.put("no", var("likes-" + Long.toString(like.user) + Long.toString(like.messageId)).isa("likes")
-                .rel("message-liked", var("message-" + Long.toString(like.messageId)))
-                .rel("message-liked-by", var("person-" + Long.toString(like.user))));
+                .rel("liked", var("message-" + Long.toString(like.messageId)))
+                .rel("liker", var("person-" + Long.toString(like.user))));
 
         String relationVariableValue = "likingDate-" + Dictionaries.dates.formatDateTime(like.date).hashCode();
         currentList.put("maybe", var(relationVariableValue).isa("creation-date").value(Dictionaries.dates.formatDateTime(like.date)));
 
-        currentList.put("gallina", var().isa("relation-has-resource")
-                .rel("relation-value", var(relationVariableValue))
-                .rel("relation-target", var("likes-" + Long.toString(like.user) + Long.toString(like.messageId))));
+        currentList.put("gallina", var().isa("relation-resource")
+                .rel("relation-resource-value", var(relationVariableValue))
+                .rel("relation-resource-owner", var("likes-" + Long.toString(like.user) + Long.toString(like.messageId))));
         relationshipsList.add(currentList);
 
     }
@@ -373,25 +372,25 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
 
         entitiesList.add(var(Integer.toString(creationDate.hashCode())).isa("creation-date").value(creationDate));
 
-        entitiesList.add(var().isa("message-has-resource")
-                .rel("message-target", var(messageId))
-                .rel("message-value", var(Integer.toString(creationDate.hashCode()))));
+        entitiesList.add(var().isa("message-resource")
+                .rel("message-resource-owner", var(messageId))
+                .rel("message-resource-value", var(Integer.toString(creationDate.hashCode()))));
 
         // ====== MESSAGE LOCATION IP =====================
 
         entitiesList.add(var(Integer.toString(message.ipAddress().toString().hashCode())).isa("location-ip").value(message.ipAddress().toString()));
 
-        entitiesList.add(var().isa("message-has-resource")
-                .rel("message-target", var(messageId))
-                .rel("message-value", var(Integer.toString(message.ipAddress().toString().hashCode()))));
+        entitiesList.add(var().isa("message-resource")
+                .rel("message-resource-owner", var(messageId))
+                .rel("message-resource-value", var(Integer.toString(message.ipAddress().toString().hashCode()))));
 
         // ====== MESSAGE BROWSER =====================
 
         entitiesList.add(var(Integer.toString(Dictionaries.browsers.getName(message.browserId()).hashCode())).isa("browser-used").value(Dictionaries.browsers.getName(message.browserId())));
 
-        entitiesList.add(var().isa("message-has-resource")
-                .rel("message-target", var(messageId))
-                .rel("message-value", var(Integer.toString(Dictionaries.browsers.getName(message.browserId()).hashCode()))));
+        entitiesList.add(var().isa("message-resource")
+                .rel("message-resource-owner", var(messageId))
+                .rel("message-resource-value", var(Integer.toString(Dictionaries.browsers.getName(message.browserId()).hashCode()))));
 
 
         // ====== MESSAGE CONTENT =====================
@@ -399,17 +398,17 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
         String varNameMessageValue = Integer.toString(message.content().hashCode());
         entitiesList.add(var(varNameMessageValue).isa("content").value(message.content()));
 
-        entitiesList.add(var().isa("message-has-resource")
-                .rel("message-target", var(messageId))
-                .rel("message-value", var(varNameMessageValue)));
+        entitiesList.add(var().isa("message-resource")
+                .rel("message-resource-owner", var(messageId))
+                .rel("message-resource-value", var(varNameMessageValue)));
 
         // ====== MESSAGE LENGTH =====================
 
         entitiesList.add(var("length-" + messageId).isa("length").value(Integer.toString(message.content().length())));
 
-        entitiesList.add(var().isa("message-has-resource")
-                .rel("message-target", var(messageId))
-                .rel("message-value", var("length-" + messageId)));
+        entitiesList.add(var().isa("message-resource")
+                .rel("message-resource-owner", var(messageId))
+                .rel("message-resource-value", var("length-" + messageId)));
     }
 
     public void reset() {

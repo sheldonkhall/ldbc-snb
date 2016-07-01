@@ -24,7 +24,7 @@ import static ldbc.snb.datagen.serializer.mindmaps.GraqlPersonSerializer.formatV
 public class GraqlInvariantSerializer extends InvariantSerializer {
 
     final static String filePath = "./ldbc-snb-data-invariant.gql";
-    final static String filePathTagClass = "./ldbc-snb-data-invariant-tag-class.gql";
+    final static String filePathCategory = "./ldbc-snb-data-invariant-tag-class.gql";
     final static String filePathTag = "./ldbc-snb-data-invariant-tag.gql";
     final static int batchSize = 40;
     final static int sleep = 200;
@@ -35,7 +35,7 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
     private int serializedEntities;
 
     private BufferedWriter bufferedWriterAll;
-    private BufferedWriter bufferedWriterTagClass;
+    private BufferedWriter bufferedWriterCategory;
     private BufferedWriter bufferedWriterTag;
 
     long startTime;
@@ -58,8 +58,8 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
         try {
             bufferedWriterAll = new BufferedWriter(new FileWriter(filePath, true));
 
-            bufferedWriterTagClass = new BufferedWriter(new FileWriter(filePathTagClass));
-            bufferedWriterTagClass.write("insert \n");
+            bufferedWriterCategory = new BufferedWriter(new FileWriter(filePathCategory));
+            bufferedWriterCategory.write("insert \n");
 
             bufferedWriterTag = new BufferedWriter(new FileWriter(filePathTag));
             bufferedWriterTag.write("insert \n");
@@ -82,7 +82,7 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
             bufferedWriterAll.write("\n");
             bufferedWriterAll.close();
 
-            bufferedWriterTagClass.close();
+            bufferedWriterCategory.close();
             bufferedWriterTag.close();
 
         } catch (IOException e) {
@@ -115,16 +115,16 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
         String varNameResource = place.getType() + "_name_" + place.getName().hashCode();
         varList.add(var(varNameResource).isa("name").value(place.getName()));
 
-        varList.add(var().isa("entity-has-resource")
-                .rel("entity-value", var(varNameResource))
-                .rel("entity-target", var(varNamePlace)));
+        varList.add(var().isa("entity-resource")
+                .rel("entity-resource-value", var(varNameResource))
+                .rel("entity-resource-owner", var(varNamePlace)));
 
-        // relation is-part-of
+        // relation sublocate
         if (place.getType().equals(Place.CITY)) {
             String varNameLocation2 = Place.COUNTRY + "-" + Dictionaries.places.belongsTo(place.getId());
             varList.add(var(varNameLocation2).isa(Place.COUNTRY).id(varNameLocation2));
 
-            varList.add(var().isa("is-part-of")
+            varList.add(var().isa("sublocate")
                     .rel("location1", var(varNamePlace))
                     .rel("location2", var(varNameLocation2)));
 
@@ -132,7 +132,7 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
             String varNameLocation2 = Place.CONTINENT + "-" + Dictionaries.places.belongsTo(place.getId());
             varList.add(var(varNameLocation2).isa(Place.CONTINENT).id(varNameLocation2));
 
-            varList.add(var().isa("is-part-of")
+            varList.add(var().isa("sublocate")
                     .rel("location1", var(varNamePlace))
                     .rel("location2", var(varNameLocation2)));
         }
@@ -157,7 +157,7 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
             }
         }
 
-        String varNameOrganization = organization.type.toString() + organization.id;
+        String varNameOrganization = organization.type.toString() + "-" + organization.id;
         System.out.println("SERIALISING ORGANIZATION ===> " + varNameOrganization);
         varList.add(var(varNameOrganization).isa(organization.type.toString())
                 .id(varNameOrganization).value(organization.name));
@@ -165,26 +165,26 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
         String varNameResource = varNameOrganization + "_name_" + organization.name.hashCode();
         varList.add(var(varNameResource).isa("name").value(organization.name));
 
-        varList.add(var().isa("entity-has-resource")
-                .rel("entity-value", var(varNameResource))
-                .rel("entity-target", var(varNameOrganization)));
+        varList.add(var().isa("entity-resource")
+                .rel("entity-resource-value", var(varNameResource))
+                .rel("entity-resource-owner", var(varNameOrganization)));
 
-        // relation location-of-subject
+        // relation resides
         if (organization.type.toString().equals("university")) {
             String varNamePlace = "city-" + organization.location;
             varList.add(var(varNamePlace).isa("city").id(varNamePlace));
 
-            varList.add(var().isa("located-in")
-                    .rel("subject-with-location", var(varNameOrganization))
-                    .rel("location-of-subject", var(varNamePlace)));
+            varList.add(var().isa("resides")
+                    .rel("located-subject", var(varNameOrganization))
+                    .rel("subject-location", var(varNamePlace)));
 
         } else if (organization.type.toString().equals("company")) {
             String varNamePlace = "country-" + organization.location;
             varList.add(var(varNamePlace).isa("country").id(varNamePlace));
 
-            varList.add(var().isa("located-in")
-                    .rel("subject-with-location", var(varNameOrganization))
-                    .rel("location-of-subject", var(varNamePlace)));
+            varList.add(var().isa("resides")
+                    .rel("located-subject", var(varNameOrganization))
+                    .rel("subject-location", var(varNamePlace)));
         }
     }
 
@@ -202,36 +202,36 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
                 varList = new ArrayList<>();
             }
 
-            String varNameTagClass = "tag-class-" + tagClass.id;
-            System.out.println("SERIALISING TAG CLASS ===> " + varNameTagClass);
+            String varNameCategory = "category-" + tagClass.id;
+            System.out.println("SERIALISING TAG CATEGORY ===> " + varNameCategory);
 
-            var = var(varNameTagClass).isa("tag-class").id(varNameTagClass).value(tagClass.name);
+            var = var(varNameCategory).isa("category").id(varNameCategory).value(tagClass.name);
             varList.add(var);
-            bufferedWriterTagClass.write(formatVar(var));
+            bufferedWriterCategory.write(formatVar(var));
 
-            String varNameResource = varNameTagClass + "_name_" + tagClass.name.hashCode();
+            String varNameResource = varNameCategory + "_name_" + tagClass.name.hashCode();
             var = var(varNameResource).isa("name").value(tagClass.name);
             varList.add(var);
-            bufferedWriterTagClass.write(formatVar(var));
+            bufferedWriterCategory.write(formatVar(var));
 
-            var = var().isa("entity-has-resource")
-                    .rel("entity-value", var(varNameResource))
-                    .rel("entity-target", var(varNameTagClass));
+            var = var().isa("entity-resource")
+                    .rel("entity-resource-value", var(varNameResource))
+                    .rel("entity-resource-owner", var(varNameCategory));
             varList.add(var);
-            bufferedWriterTagClass.write(formatVar(var));
+            bufferedWriterCategory.write(formatVar(var));
 
-            // relation subclass-of
+            // relation grouping
             if (tagClass.parent != -1) {
-                String varNameTagClassSuper = "tag-class-" + tagClass.parent;
-                var = var(varNameTagClassSuper).isa("tag-class").id(varNameTagClassSuper);
+                String varNameCategorySuper = "category-" + tagClass.parent;
+                var = var(varNameCategorySuper).isa("category").id(varNameCategorySuper);
                 varList.add(var);
-                bufferedWriterTagClass.write(formatVar(var));
+                bufferedWriterCategory.write(formatVar(var));
 
-                var = var().isa("subclass-of")
-                        .rel("superclass", var(varNameTagClassSuper))
-                        .rel("subclass", varNameTagClass);
+                var = var().isa("subgrouping")
+                        .rel("supergroup", var(varNameCategorySuper))
+                        .rel("subgroup", varNameCategory);
                 varList.add(var);
-                bufferedWriterTagClass.write(formatVar(var));
+                bufferedWriterCategory.write(formatVar(var));
             }
 
         } catch (IOException e) {
@@ -264,20 +264,20 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
             varList.add(var);
             bufferedWriterTag.write(formatVar(var));
 
-            var = var().isa("entity-has-resource")
-                    .rel("entity-value", var(varNameResource))
-                    .rel("entity-target", var(varNameTag));
+            var = var().isa("entity-resource")
+                    .rel("entity-resource-value", var(varNameResource))
+                    .rel("entity-resource-owner", var(varNameTag));
             varList.add(var);
             bufferedWriterTag.write(formatVar(var));
 
-            String varNameTagClass = "tag-class-" + tag.tagClass;
-            var = var(varNameTagClass).isa("tag-class").id(varNameTagClass);
+            String varNameCategory = "category-" + tag.tagClass;
+            var = var(varNameCategory).isa("category").id(varNameCategory);
             varList.add(var);
             bufferedWriterTag.write(formatVar(var));
 
-            var = var().isa("with-type")
-                    .rel("type-of-tag", var(varNameTagClass))
-                    .rel("tag-with-type", var(varNameTag));
+            var = var().isa("grouping")
+                    .rel("tag-group", var(varNameCategory))
+                    .rel("grouped-tag", var(varNameTag));
             varList.add(var);
             bufferedWriterTag.write(formatVar(var));
 
