@@ -57,10 +57,8 @@ rhs "select $x, $y where
 "R7" isa inference-rule,
 lhs "select $x, $y where
 $x isa person;$x has gender 'male';
-#$x has age < 45;
-#$y has max-age < 45;
-#$x has age > 18;
-#$y has min-age >18;
+$x has age >=18;
+$y has min-age >=18;
 $y isa product;
 $z isa country;$z value 'Italy';
 ($y, $z) isa made-in"
