@@ -6,7 +6,7 @@ insert
 "organization" ako entity;
 "language" ako entity;
 "tag" ako entity;
-"tag-class" ako entity;
+"category" ako entity;
 "forum" ako entity;
 
 # generic resources
@@ -16,23 +16,23 @@ insert
 "location-ip" isa resource-type, datatype string;
 
 # a generic relationship for resources of entity
-"entity-target" isa role-type;
-"entity-value" isa role-type;
-"entity-has-resource" isa relation-type, has-role entity-value, has-role entity-target;
-entity plays-role entity-target;
-name plays-role entity-value;
+"entity-resource-owner" isa role-type;
+"entity-resource-value" isa role-type;
+"entity-resource" isa relation-type, has-role entity-resource-value, has-role entity-resource-owner;
+entity plays-role entity-resource-owner;
+name plays-role entity-resource-value;
 
 # a generic relationship for resources of relation
 "relation" isa relation-type, is-abstract;
-"relation-target" isa role-type;
-"relation-value" isa role-type;
-"relation-has-resource" isa relation-type, has-role relation-value, has-role relation-target;
-relation plays-role relation-target;
-creation-date plays-role relation-value;
+"relation-resource-owner" isa role-type;
+"relation-resource-value" isa role-type;
+"relation-resource" isa relation-type, has-role relation-resource-value, has-role relation-resource-owner;
+relation plays-role relation-resource-owner;
+creation-date plays-role relation-resource-value;
 
-"location-of-subject" ako location;
-"subject-with-location" isa role-type;
-"located-in" isa relation-type, has-role location-of-subject, has-role subject-with-location;
+"subject-location" ako location;
+"located-subject" isa role-type;
+"resides" isa relation-type, has-role subject-location, has-role located-subject;
 
 # place
 "continent" ako place;
@@ -41,35 +41,35 @@ creation-date plays-role relation-value;
 
 "location" isa role-type, is-abstract;
 
-"location1" ako location;
-"location2" ako location;
-"is-part-of" isa relation-type, has-role location1, has-role location2;
+"member-location" ako location;
+"container-location" ako location;
+"sublocate" isa relation-type, has-role member-location, has-role container-location;
 place plays-role location;
 
 # organization
 "university" ako organization;
 "company" ako organization;
-organization plays-role subject-with-location;
+organization plays-role located-subject;
 
 # person
 "person" isa entity-type;
 
-"person-target" isa role-type;
-"person-value" isa role-type;
-"person-has-resource" isa relation-type, has-role person-value, has-role person-target;
-person plays-role person-target;
-language plays-role person-value;
-creation-date plays-role person-value;
-browser-used plays-role person-value;
-location-ip plays-role person-value;
+"person-resource-owner" isa role-type;
+"person-resource-value" isa role-type;
+"person-resource" isa relation-type, has-role person-resource-value, has-role person-resource-owner;
+person plays-role person-resource-owner;
+language plays-role person-resource-value;
+creation-date plays-role person-resource-value;
+browser-used plays-role person-resource-value;
+location-ip plays-role person-resource-value;
 
-"first-name" isa resource-type, datatype string, plays-role person-value;
-"last-name" isa resource-type, datatype string, plays-role person-value;
-"gender" isa resource-type, datatype string, plays-role person-value;
-"birthday" isa resource-type, datatype string, plays-role person-value;
-"email" isa resource-type, datatype string, plays-role person-value;
+"firstname" isa resource-type, datatype string, plays-role person-resource-value;
+"lastname" isa resource-type, datatype string, plays-role person-resource-value;
+"gender" isa resource-type, datatype string, plays-role person-resource-value;
+"birthday" isa resource-type, datatype string, plays-role person-resource-value;
+"email" isa resource-type, datatype string, plays-role person-resource-value;
 
-person plays-role subject-with-location;
+person plays-role located-subject;
 
 "acquaintance" isa role-type, is-abstract;
 "acquaintance1" ako acquaintance;
@@ -78,120 +78,120 @@ person plays-role subject-with-location;
 person plays-role acquaintance;
 
 "student" isa role-type;
-"university-with-student" isa role-type;
-"study-at" isa relation-type, has-role student, has-role university-with-student;
+"enrolled-university" isa role-type;
+"attends" isa relation-type, has-role student, has-role enrolled-university;
 person plays-role student;
-university plays-role university-with-student;
+university plays-role enrolled-university;
 
 "employee" isa role-type;
-"company-with-employee" isa role-type;
-"work-at" isa relation-type, has-role employee, has-role company-with-employee;
+"employer" isa role-type;
+"employment" isa relation-type, has-role employee, has-role employer;
 person plays-role employee;
-company plays-role company-with-employee;
+company plays-role employer;
 
 "class-year" isa resource-type, datatype string;
-"study-at-value" isa role-type;
-"study-at-target" isa role-type;
-"study-at-has-resource" isa relation-type, has-role study-at-value, has-role study-at-target;
-study-at plays-role study-at-target;
-class-year plays-role study-at-value;
+"attends-resource-value" isa role-type;
+"attends-resource-owner" isa role-type;
+"attends-resource" isa relation-type, has-role attends-resource-value, has-role attends-resource-owner;
+attends plays-role attends-resource-owner;
+class-year plays-role attends-resource-value;
 
-"work-from" isa resource-type, datatype string;
-"work-at-value" isa role-type;
-"work-at-target" isa role-type;
-"work-at-has-resource" isa relation-type, has-role work-at-value, has-role work-at-target;
-work-at plays-role work-at-target;
-work-from plays-role work-at-value;
+"employment-startdate" isa resource-type, datatype string;
+"employment-resource-value" isa role-type;
+"employment-resource-owner" isa role-type;
+"employment-resource" isa relation-type, has-role employment-resource-value, has-role employment-resource-owner;
+employment plays-role employment-resource-owner;
+employment-startdate plays-role employment-resource-value;
 
 # message
 "message" isa entity-type, is-abstract;
 
-"message-target" isa role-type;
-"message-value" isa role-type;
-"message-has-resource" isa relation-type, has-role message-value, has-role message-target;
-message plays-role message-target;
-creation-date plays-role message-value;
-browser-used plays-role message-value;
-location-ip plays-role message-value;
+"message-resource-owner" isa role-type;
+"message-resource-value" isa role-type;
+"message-resource" isa relation-type, has-role message-resource-value, has-role message-resource-owner;
+message plays-role message-resource-owner;
+creation-date plays-role message-resource-value;
+browser-used plays-role message-resource-value;
+location-ip plays-role message-resource-value;
 
-"content" isa resource-type, datatype string, plays-role message-value;
-"length" isa resource-type, datatype string, plays-role message-value;
+"content" isa resource-type, datatype string, plays-role message-resource-value;
+"length" isa resource-type, datatype string, plays-role message-resource-value;
 
-"message-liked" isa role-type;
-"message-liked-by" isa role-type;
-"likes" ako relation, has-role message-liked, has-role message-liked-by;
-message plays-role message-liked;
-person plays-role message-liked-by;
+"liked" isa role-type;
+"liker" isa role-type;
+"likes" ako relation, has-role liked, has-role liker;
+message plays-role liked;
+person plays-role liker;
 
-"message-created" isa role-type;
-"message-creator" isa role-type;
-"creates" isa relation-type, has-role message-created, has-role message-creator;
-message plays-role message-created;
-person plays-role message-creator;
+"written" isa role-type;
+"writer" isa role-type;
+"writes" isa relation-type, has-role written, has-role writer;
+message plays-role written;
+person plays-role writer;
 
-message plays-role subject-with-location;
+message plays-role located-subject;
 
 "comment" ako message;
 
-"message-with-reply" isa role-type;
-"reply" isa role-type;
-"reply-of" isa relation-type, has-role reply, has-role message-with-reply;
-comment plays-role reply;
-message plays-role message-with-reply;
+"reply-owner" isa role-type;
+"reply-content" isa role-type;
+"reply" isa relation-type, has-role reply-content, has-role reply-owner;
+comment plays-role reply-content;
+message plays-role reply-owner;
 
 "post" ako message;
 
-"post-target" isa role-type;
-"post-value" isa role-type;
-"post-has-resource" isa relation-type, has-role post-target, has-role post-value;
-post plays-role post-target;
-language plays-role post-value;
+"post-resource-owner" isa role-type;
+"post-resource-value" isa role-type;
+"post-resource" isa relation-type, has-role post-resource-owner, has-role post-resource-value;
+post plays-role post-resource-owner;
+language plays-role post-resource-value;
 
-"image-file" isa resource-type, datatype string, plays-role post-value;
+"image-file" isa resource-type, datatype string, plays-role post-resource-value;
 
 # forum
-"forum-target" isa role-type;
-"forum-value" isa role-type;
-"forum-has-resource" isa relation-type, has-role forum-value, has-role forum-target;
-forum plays-role forum-target;
-creation-date plays-role forum-value;
+"forum-resource-owner" isa role-type;
+"forum-resource-value" isa role-type;
+"forum-resource" isa relation-type, has-role forum-resource-value, has-role forum-resource-owner;
+forum plays-role forum-resource-owner;
+creation-date plays-role forum-resource-value;
 
-"forum-moderator" isa role-type;
-"forum-with-moderator" isa role-type;
-"forum-moderated-by" isa relation-type, has-role forum-moderator, has-role forum-with-moderator;
-person plays-role forum-moderator;
-forum plays-role forum-with-moderator;
+"moderator" isa role-type;
+"moderated" isa role-type;
+"moderates" isa relation-type, has-role moderator, has-role moderated;
+person plays-role moderator;
+forum plays-role moderated;
 
 "forum-member" isa role-type;
-"forum-with-member" isa role-type;
-"forum-membership" ako relation, has-role forum-member, has-role forum-with-member;
+"membered-forum" isa role-type;
+"membership" ako relation, has-role forum-member, has-role membered-forum;
 person plays-role forum-member;
-forum plays-role forum-with-member;
+forum plays-role membered-forum;
 
-"container-of-post" isa role-type;
-"post-with-container" isa role-type;
-"container-of" isa relation-type, has-role container-of-post, has-role post-with-container;
-post plays-role post-with-container;
-forum plays-role container-of-post;
+"post-container" isa role-type;
+"contained-post" isa role-type;
+"containing" isa relation-type, has-role post-container, has-role contained-post;
+post plays-role contained-post;
+forum plays-role post-container;
 
 # tag
-"tag-of-subject" isa role-type;
-"subject-with-tag" isa role-type;
-"with-tag" isa relation-type, has-role subject-with-tag, has-role tag-of-subject;
-tag plays-role tag-of-subject;
-forum plays-role subject-with-tag;
-message plays-role subject-with-tag;
-person plays-role subject-with-tag;
+"subject-tag" isa role-type;
+"tagged-subject" isa role-type;
+"tagging" isa relation-type, has-role tagged-subject, has-role subject-tag;
+tag plays-role subject-tag;
+forum plays-role tagged-subject;
+message plays-role tagged-subject;
+person plays-role tagged-subject;
 
 # tag class
-"tag-group" isa role-type, is-abstract;
-"subclass" ako tag-group;
-"superclass" ako tag-group;
-"subclass-of" isa relation-type, has-role subclass, has-role superclass;
-tag-class plays-role tag-group;
+"group" isa role-type, is-abstract;
+"subgroup" ako group;
+"supergroup" ako group;
+"subgrouping" isa relation-type, has-role subgroup, has-role supergroup;
+category plays-role group;
 
-"tag-with-type" isa role-type;
-"type-of-tag" isa role-type;
-"with-type" isa relation-type, has-role tag-with-type, has-role type-of-tag;
-tag plays-role tag-with-type;
-tag-class plays-role type-of-tag;
+"grouped-tag" isa role-type;
+"tag-group" isa role-type;
+"grouping" isa relation-type, has-role grouped-tag, has-role tag-group;
+tag plays-role grouped-tag;
+category plays-role tag-group;
