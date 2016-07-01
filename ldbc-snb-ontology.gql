@@ -68,6 +68,7 @@ location-ip plays-role person-resource-value;
 "gender" isa resource-type, datatype string, plays-role person-resource-value;
 "birthday" isa resource-type, datatype string, plays-role person-resource-value;
 "email" isa resource-type, datatype string, plays-role person-resource-value;
+"age" isa resource-type, datatype long, plays-role person-resource-value;
 
 person plays-role located-subject;
 

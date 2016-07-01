@@ -26,7 +26,7 @@ import static io.mindmaps.graql.api.query.QueryBuilder.var;
 
 public class GraqlPersonSerializer extends PersonSerializer {
 
-    final static String POST_TRANSACTION_REQUEST_URL = "http://10.0.1.28:8080/transaction";
+    final static String POST_TRANSACTION_REQUEST_URL = "http://10.0.1.73:8080/transaction";
     final static String filePath = "./ldbc-snb-data.gql";
     final static int batchSize = 10;
     final static int sleep = 2500;
@@ -34,13 +34,21 @@ public class GraqlPersonSerializer extends PersonSerializer {
     private static Set<String> ids = new HashSet<>();
 
     private List<Var> varList;
-    private QueryBuilder queryBuilder;
+    private static QueryBuilder queryBuilder;
     private int serializedPersons;
 
     private BufferedWriter bufferedWriter;
 
     long startTime;
     long endTime;
+
+    public static String formatString(String input) {
+        return input.replaceAll("; ", ";\n").substring(7) + "\n";
+    }
+
+    public static String formatVar(Var input) {
+        return formatString(queryBuilder.insert(input).toString());
+    }
 
     public static HttpURLConnection buildConnectionPost(String engineUrlPost, String content) {
         try {
@@ -81,13 +89,6 @@ public class GraqlPersonSerializer extends PersonSerializer {
         }
     }
 
-    public String formatString(Object resourceValue){
-        // escape all double quotes inside strings
-        String resource = (String) resourceValue;
-        resource = resource.replace("\\", "");
-        resource = resource.replace("\"", "\\\"");
-        return resource;
-    }
     private void personWithResource(String varNamePerson, String isa,
                                     String resourceValue) {
         String varNameResource = varNamePerson + "_" + isa + "_" + resourceValue.hashCode();
@@ -95,8 +96,8 @@ public class GraqlPersonSerializer extends PersonSerializer {
         varList.add(var(varNamePerson).id(varNamePerson));
         varList.add(var(varNameResource).isa(isa).value(resourceValue));
         varList.add(var().isa("person-has-resource")
-                .rel("person-target", var(varNamePerson))
-                .rel("person-value", var(varNameResource)));
+                .rel("person-resource-owner", var(varNamePerson))
+                .rel("person-resource-value", var(varNameResource)));
     }
 
     @Override
@@ -178,13 +179,21 @@ public class GraqlPersonSerializer extends PersonSerializer {
             varList.add(var(varNamePerson).id(varNamePerson).value(p.firstName() + " " + p.lastName()));
         }
 
-        personWithResource(varNamePerson, "first-name", p.firstName());
-        personWithResource(varNamePerson, "last-name", p.lastName());
+        personWithResource(varNamePerson, "firstname", p.firstName());
+        personWithResource(varNamePerson, "lastname", p.lastName());
         personWithResource(varNamePerson, "gender", gender);
         personWithResource(varNamePerson, "browser-used", Dictionaries.browsers.getName(p.browserId()));
         personWithResource(varNamePerson, "creation-date", creationDateString);
         personWithResource(varNamePerson, "birthday", birthdayDateString);
         personWithResource(varNamePerson, "location-ip", p.ipAddress().toString());
+
+        long birthday = 2016 - Long.parseLong(birthdayDateString.substring(5));
+        varList.add(var(varNamePerson).id(varNamePerson));
+        String varNameResource = varNamePerson + "_age_" + birthday;
+        varList.add(var(varNameResource).isa("age").value(birthday));
+        varList.add(var().isa("person-has-resource")
+                .rel("person-resource-owner", var(varNamePerson))
+                .rel("person-resource-value", var(varNameResource)));
 
 
         //Resource relationships for all the languages a person is capable of speaking
@@ -206,9 +215,9 @@ public class GraqlPersonSerializer extends PersonSerializer {
         } else {
             varList.add(var(varNameCity).id(varNameCity));
         }
-        varList.add(var().isa("located-in")
-                .rel("subject-with-location", var(varNamePerson))
-                .rel("location-of-subject", var(varNameCity)));
+        varList.add(var().isa("resides")
+                .rel("located-subject", var(varNamePerson))
+                .rel("subject-location", var(varNameCity)));
 
         //Resource relationships for the current person's interests
         for (Integer interest : p.interests()) {
@@ -242,17 +251,17 @@ public class GraqlPersonSerializer extends PersonSerializer {
             varList.add(var(varNameUniversity).id(varNameUniversity));
         }
 
-        String varNameRelation = "study-at_" + varNamePerson + "_" + varNameUniversity;
-        varList.add(var(varNameRelation).isa("study-at")
+        String varNameRelation = "attends_" + varNamePerson + "_" + varNameUniversity;
+        varList.add(var(varNameRelation).isa("attends")
                 .rel("student", var(varNamePerson))
-                .rel("university-with-student", var(varNameUniversity)));
+                .rel("enrolled-university", var(varNameUniversity)));
 
         String varNameResource = varNameRelation + "_class-year_" + dateString.hashCode();
         varList.add(var(varNameResource).isa("class-year").value(dateString));
 
-        varList.add(var().isa("study-at-has-resource")
-                .rel("study-at-target", var(varNameRelation))
-                .rel("study-at-value", var(varNameResource)));
+        varList.add(var().isa("attends-resource")
+                .rel("attends-resource-owner", var(varNameRelation))
+                .rel("attends-resource-value", var(varNameResource)));
     }
 
     @Override
@@ -270,17 +279,17 @@ public class GraqlPersonSerializer extends PersonSerializer {
             varList.add(var(varNameCompany).id(varNameCompany));
         }
 
-        String varNameRelation = "work-at_" + varNamePerson + "_" + varNameCompany;
-        varList.add(var(varNameRelation).isa("work-at")
+        String varNameRelation = "employment_" + varNamePerson + "_" + varNameCompany;
+        varList.add(var(varNameRelation).isa("employment")
                 .rel("employee", var(varNamePerson))
-                .rel("company-with-employee", var(varNameCompany)));
+                .rel("employer", var(varNameCompany)));
 
-        String varNameResource = varNameRelation + "_work-from_" + dateString.hashCode();
-        varList.add(var(varNameResource).isa("work-from").value(dateString));
+        String varNameResource = varNameRelation + "_employment-startdate_" + dateString.hashCode();
+        varList.add(var(varNameResource).isa("employment-startdate").value(dateString));
 
-        varList.add(var().isa("work-at-has-resource")
-                .rel("work-at-target", var(varNameRelation))
-                .rel("work-at-value", var(varNameResource)));
+        varList.add(var().isa("employment-resource")
+                .rel("employment-resource-owner", var(varNameRelation))
+                .rel("employment-resource-value", var(varNameResource)));
     }
 
     @Override
@@ -307,8 +316,8 @@ public class GraqlPersonSerializer extends PersonSerializer {
         String varNameResource = varNameRelation + "_creation-date_" + dateString.hashCode();
         varList.add(var(varNameResource).isa("creation-date").value(dateString));
 
-        varList.add(var().isa("relation-has-resource")
-                .rel("relation-target", var(varNameRelation))
-                .rel("relation-value", var(varNameResource)));
+        varList.add(var().isa("relation-resource")
+                .rel("relation-resource-owner", var(varNameRelation))
+                .rel("relation-resource-value", var(varNameResource)));
     }
 }
