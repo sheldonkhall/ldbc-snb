@@ -125,16 +125,16 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
             varList.add(var(varNameLocation2).isa(Place.COUNTRY).id(varNameLocation2));
 
             varList.add(var().isa("sublocate")
-                    .rel("location1", var(varNamePlace))
-                    .rel("location2", var(varNameLocation2)));
+                    .rel("member-location", var(varNamePlace))
+                    .rel("container-location", var(varNameLocation2)));
 
         } else if (place.getType().equals(Place.COUNTRY)) {
             String varNameLocation2 = Place.CONTINENT + "-" + Dictionaries.places.belongsTo(place.getId());
             varList.add(var(varNameLocation2).isa(Place.CONTINENT).id(varNameLocation2));
 
             varList.add(var().isa("sublocate")
-                    .rel("location1", var(varNamePlace))
-                    .rel("location2", var(varNameLocation2)));
+                    .rel("member-location", var(varNamePlace))
+                    .rel("container-location", var(varNameLocation2)));
         }
     }
 

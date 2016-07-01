@@ -224,7 +224,7 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
         entitiesList.add(var(language).isa("language").id(language));
 
         entitiesList.add(var().isa("post-resource")
-                .rel("post-resource-target", var(messageId))
+                .rel("post-resource-owner", var(messageId))
                 .rel("post-resource-value", var(language)));
     }
 
