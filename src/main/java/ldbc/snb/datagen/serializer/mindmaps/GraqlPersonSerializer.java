@@ -26,7 +26,7 @@ import static io.mindmaps.graql.api.query.QueryBuilder.var;
 
 public class GraqlPersonSerializer extends PersonSerializer {
 
-    final static String POST_TRANSACTION_REQUEST_URL = "http://10.0.1.28:8080/transaction";
+    final static String POST_TRANSACTION_REQUEST_URL = "http://10.0.1.73:8080/transaction";
     final static String filePath = "./ldbc-snb-data.gql";
     final static int batchSize = 10;
     final static int sleep = 2500;
@@ -34,13 +34,21 @@ public class GraqlPersonSerializer extends PersonSerializer {
     private static Set<String> ids = new HashSet<>();
 
     private List<Var> varList;
-    private QueryBuilder queryBuilder;
+    private static QueryBuilder queryBuilder;
     private int serializedPersons;
 
     private BufferedWriter bufferedWriter;
 
     long startTime;
     long endTime;
+
+    public static String formatString(String input) {
+        return input.replaceAll("; ", ";\n").substring(7) + "\n";
+    }
+
+    public static String formatVar(Var input) {
+        return formatString(queryBuilder.insert(input).toString());
+    }
 
     public static HttpURLConnection buildConnectionPost(String engineUrlPost, String content) {
         try {
@@ -81,13 +89,14 @@ public class GraqlPersonSerializer extends PersonSerializer {
         }
     }
 
-    public String formatString(Object resourceValue){
+    public String formatString(Object resourceValue) {
         // escape all double quotes inside strings
         String resource = (String) resourceValue;
         resource = resource.replace("\\", "");
         resource = resource.replace("\"", "\\\"");
         return resource;
     }
+
     private void personWithResource(String varNamePerson, String isa,
                                     String resourceValue) {
         String varNameResource = varNamePerson + "_" + isa + "_" + resourceValue.hashCode();

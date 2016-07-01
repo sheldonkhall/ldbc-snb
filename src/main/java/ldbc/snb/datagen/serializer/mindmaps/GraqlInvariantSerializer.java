@@ -18,10 +18,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static io.mindmaps.graql.api.query.QueryBuilder.var;
+import static ldbc.snb.datagen.serializer.mindmaps.GraqlPersonSerializer.formatString;
+import static ldbc.snb.datagen.serializer.mindmaps.GraqlPersonSerializer.formatVar;
 
 public class GraqlInvariantSerializer extends InvariantSerializer {
 
-    final static String filePath = "./ldbc-snb-data.gql";
+    final static String filePath = "./ldbc-snb-data-invariant.gql";
+    final static String filePathTagClass = "./ldbc-snb-data-invariant-tag-class.gql";
+    final static String filePathTag = "./ldbc-snb-data-invariant-tag.gql";
     final static int batchSize = 40;
     final static int sleep = 200;
 
@@ -30,10 +34,14 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
     private QueryBuilder queryBuilder;
     private int serializedEntities;
 
-    private BufferedWriter bufferedWriter;
+    private BufferedWriter bufferedWriterAll;
+    private BufferedWriter bufferedWriterTagClass;
+    private BufferedWriter bufferedWriterTag;
 
     long startTime;
     long endTime;
+
+    private Var var;
 
     @Override
     public void reset() {
@@ -48,7 +56,14 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
         varList = new ArrayList<>();
 
         try {
-            bufferedWriter = new BufferedWriter(new FileWriter(filePath, true));
+            bufferedWriterAll = new BufferedWriter(new FileWriter(filePath, true));
+
+            bufferedWriterTagClass = new BufferedWriter(new FileWriter(filePathTagClass));
+            bufferedWriterTagClass.write("insert \n");
+
+            bufferedWriterTag = new BufferedWriter(new FileWriter(filePathTag));
+            bufferedWriterTag.write("insert \n");
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -62,10 +77,13 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
             GraqlPersonSerializer.sendToEngine(graqlString, sleep);
 
             graqlString = graqlString.replaceAll("; ", ";\n");
-            bufferedWriter.write(graqlString.substring(7) + "\n");
+            bufferedWriterAll.write(graqlString.substring(7) + "\n");
 
-            bufferedWriter.write("\n");
-            bufferedWriter.close();
+            bufferedWriterAll.write("\n");
+            bufferedWriterAll.close();
+
+            bufferedWriterTagClass.close();
+            bufferedWriterTag.close();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -76,22 +94,22 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
 
     @Override
     protected void serialize(Place place) {
+
         serializedEntities++;
         if (serializedEntities % batchSize == 0) {
             try {
-//                bufferedWriter.write("\n# a new batch\n");
                 String graqlString = queryBuilder.insert(varList).toString();
                 GraqlPersonSerializer.sendToEngine(graqlString, sleep);
 
                 graqlString = graqlString.replaceAll("; ", ";\n");
-                bufferedWriter.write(graqlString.substring(7) + "\n");
+                bufferedWriterAll.write(graqlString.substring(7) + "\n");
                 varList = new ArrayList<>();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         String varNamePlace = place.getType() + "-" + place.getId();
-        System.out.println("SERIALISING PLACE ===> "+ varNamePlace);
+        System.out.println("SERIALISING PLACE ===> " + varNamePlace);
         varList.add(var(varNamePlace).isa(place.getType()).id(varNamePlace).value(place.getName()));
 
         String varNameResource = place.getType() + "_name_" + place.getName().hashCode();
@@ -122,16 +140,17 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
 
     @Override
     protected void serialize(Organization organization) {
+
         serializedEntities++;
         if (serializedEntities % batchSize == 0) {
             try {
-                bufferedWriter.write("\n# a new batch\n");
+                bufferedWriterAll.write("\n# a new batch\n");
 
                 String graqlString = queryBuilder.insert(varList).toString();
                 GraqlPersonSerializer.sendToEngine(graqlString, sleep);
 
                 graqlString = graqlString.replaceAll("; ", ";\n");
-                bufferedWriter.write(graqlString.substring(7) + "\n");
+                bufferedWriterAll.write(graqlString.substring(7) + "\n");
                 varList = new ArrayList<>();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -139,7 +158,7 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
         }
 
         String varNameOrganization = organization.type.toString() + organization.id;
-        System.out.println("SERIALISING ORGANIZATION ===> "+ varNameOrganization);
+        System.out.println("SERIALISING ORGANIZATION ===> " + varNameOrganization);
         varList.add(var(varNameOrganization).isa(organization.type.toString())
                 .id(varNameOrganization).value(organization.name));
 
@@ -171,74 +190,99 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
 
     @Override
     protected void serialize(TagClass tagClass) {
-        serializedEntities++;
-        if (serializedEntities % batchSize == 0) {
-            try {
-                bufferedWriter.write("\n# a new batch\n");
+        try {
+            serializedEntities++;
+            if (serializedEntities % batchSize == 0) {
 
                 String graqlString = queryBuilder.insert(varList).toString();
                 GraqlPersonSerializer.sendToEngine(graqlString, sleep);
 
-                graqlString = graqlString.replaceAll("; ", ";\n");
-                bufferedWriter.write(graqlString.substring(7) + "\n");
+                graqlString = formatString(graqlString);
+                bufferedWriterAll.write(graqlString);
                 varList = new ArrayList<>();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
-        }
 
-        String varNameTagClass = "tag-class-" + tagClass.id;
-        System.out.println("SERIALISING TAG CLASS ===> "+ varNameTagClass);
-        varList.add(var(varNameTagClass).isa("tag-class").id(varNameTagClass)
-                .value(tagClass.name));
+            String varNameTagClass = "tag-class-" + tagClass.id;
+            System.out.println("SERIALISING TAG CLASS ===> " + varNameTagClass);
 
-        String varNameResource = varNameTagClass + "_name_" + tagClass.name.hashCode();
-        varList.add(var(varNameResource).isa("name")
-                .value(tagClass.name));
+            var = var(varNameTagClass).isa("tag-class").id(varNameTagClass).value(tagClass.name);
+            varList.add(var);
+            bufferedWriterTagClass.write(formatVar(var));
 
-        varList.add(var().isa("entity-has-resource")
-                .rel("entity-value", var(varNameResource))
-                .rel("entity-target", var(varNameTagClass)));
+            String varNameResource = varNameTagClass + "_name_" + tagClass.name.hashCode();
+            var = var(varNameResource).isa("name").value(tagClass.name);
+            varList.add(var);
+            bufferedWriterTagClass.write(formatVar(var));
 
-        // relation subclass-of
-        if (tagClass.parent != -1) {
-            String varNameTagClassSuper = "tag-class-" + tagClass.parent;
-            varList.add(var(varNameTagClassSuper).isa("tag-class").id(varNameTagClassSuper));
-            varList.add(var().isa("subclass-of")
-                    .rel("superclass", var(varNameTagClassSuper))
-                    .rel("subclass", varNameTagClass));
+            var = var().isa("entity-has-resource")
+                    .rel("entity-value", var(varNameResource))
+                    .rel("entity-target", var(varNameTagClass));
+            varList.add(var);
+            bufferedWriterTagClass.write(formatVar(var));
+
+            // relation subclass-of
+            if (tagClass.parent != -1) {
+                String varNameTagClassSuper = "tag-class-" + tagClass.parent;
+                var = var(varNameTagClassSuper).isa("tag-class").id(varNameTagClassSuper);
+                varList.add(var);
+                bufferedWriterTagClass.write(formatVar(var));
+
+                var = var().isa("subclass-of")
+                        .rel("superclass", var(varNameTagClassSuper))
+                        .rel("subclass", varNameTagClass);
+                varList.add(var);
+                bufferedWriterTagClass.write(formatVar(var));
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     @Override
     protected void serialize(Tag tag) {
-        serializedEntities++;
-        if (serializedEntities % batchSize == 0) {
-            try {
-                bufferedWriter.write("\n# a new batch\n");
+        try {
+            serializedEntities++;
+            if (serializedEntities % batchSize == 0) {
 
                 String graqlString = queryBuilder.insert(varList).toString();
                 GraqlPersonSerializer.sendToEngine(graqlString, sleep);
 
                 graqlString = graqlString.replaceAll("; ", ";\n");
-                bufferedWriter.write(graqlString.substring(7) + "\n");
+                bufferedWriterAll.write(graqlString.substring(7) + "\n");
                 varList = new ArrayList<>();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+
+            String varNameTag = "tag-" + tag.id;
+            System.out.println("SERIALISING TAG ===> " + varNameTag);
+            var = var(varNameTag).isa("tag").id(varNameTag).value(tag.name);
+            varList.add(var);
+            bufferedWriterTag.write(formatVar(var));
+
+            String varNameResource = varNameTag + "_name_" + tag.name.hashCode();
+            var = var(varNameResource).isa("name").value(tag.name);
+            varList.add(var);
+            bufferedWriterTag.write(formatVar(var));
+
+            var = var().isa("entity-has-resource")
+                    .rel("entity-value", var(varNameResource))
+                    .rel("entity-target", var(varNameTag));
+            varList.add(var);
+            bufferedWriterTag.write(formatVar(var));
+
+            String varNameTagClass = "tag-class-" + tag.tagClass;
+            var = var(varNameTagClass).isa("tag-class").id(varNameTagClass);
+            varList.add(var);
+            bufferedWriterTag.write(formatVar(var));
+
+            var = var().isa("with-type")
+                    .rel("type-of-tag", var(varNameTagClass))
+                    .rel("tag-with-type", var(varNameTag));
+            varList.add(var);
+            bufferedWriterTag.write(formatVar(var));
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        String varNameTag = "tag-" + tag.id;
-        System.out.println("SERIALISING TAG ===> "+ varNameTag);
-        varList.add(var(varNameTag).isa("tag").id(varNameTag)
-                .value(tag.name));
-
-        String varNameResource = varNameTag + "_name_" + tag.name.hashCode();
-        varList.add(var(varNameResource).isa("name")
-                .value(tag.name));
-
-        varList.add(var().isa("entity-has-resource")
-                .rel("entity-value", var(varNameResource))
-                .rel("entity-target", var(varNameTag)));
     }
 }
