@@ -1,0 +1,47 @@
+insert
+
+# motorbike
+$motorbike isa category, id "motorbike", value "motorbike";
+$ducatti isa product, id "Ducatti-1299", value "Ducatti 1299";
+(typed-product $ducatti, product-type $motorbike) isa typing;
+$ducatti-min-age isa min-age, value 18;
+(product-resource-owner $ducatti, product-resource-value $ducatti-min-age) isa product-resource;
+$ducatti-gender isa gender, value "male";
+(product-resource-owner $ducatti, product-resource-value $ducatti-gender) isa product-resource;
+(product-made $ducatti, product-origin Italy) isa made-in;
+
+# music
+$cd isa category, id "cd", value "cd";
+$theWall isa product, id "the-wall", value "Pink Floyd - The Wall";
+(typed-product $theWall,product-type $cd) isa typing;
+$blizzard isa product, id "blizzard-of-ozz", value "Ozzy Osbourne - Blizzard of Oz";
+(typed-product $blizzard, product-type $cd) isa typing;
+
+$nocturnes isa product, id "nocturnes", value "Chopin - Nocturnes";
+(typed-product $nocturnes, product-type $cd) isa typing;
+
+# movie
+$movie isa category, id "movie", value "movie";
+$goodBadUgly isa product, id "The-good-the-bad-the-ugly", value "The Good, the Bad and the Ugly";
+(typed-product $goodBadUgly, product-type $movie) isa typing;
+$godfather isa product, id "Godfather", value "Godfather";
+(typed-product $godfather, product-type $movie) isa typing;
+$dumb isa product, id "Dumb-and-dumber", value "Dumb and dumber";
+(typed-product $dumb, product-type $movie) isa typing;
+
+# book
+$book isa category, id "book", value "book";
+$dorianGray isa product, id "dorian-gray", value "Oscar Wilde - The Picture of Dorian Gray";
+(typed-product $dorianGray, product-type $book) isa typing;
+$colourOfMagic isa product, id "colour-of-magic", value "Terry Pratchett - The Colour of Magic";
+(typed-product $colourOfMagic, product-type $book) isa typing;
+
+# painting
+$painting isa category, id "painting", value "painting";
+$lesElephants isa product, id "les-elephants", value "Salvador Dali - Les Elephants";
+(typed-product $lesElephants, product-type $painting) isa typing;
+
+# instrument
+$guitar isa category, id "guitar", value "guitar";
+$stratocaster isa product, id "stratocaster", value "Fender Stratocaster";
+(typed-product $stratocaster, product-type $guitar) isa typing;
