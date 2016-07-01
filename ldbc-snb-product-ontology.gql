@@ -1,6 +1,6 @@
 insert 
 
-entity isa entity-type;
+entity isa entity-type, is-abstract;
 product ako entity;
 product-resource-owner isa role-type;
 product-resource-value isa role-type;
@@ -27,7 +27,6 @@ person plays-role recommended-customer;
 
 place ako entity;
 place plays-role product-origin;
-
 
 typed-product isa role-type;
 product-type isa role-type;
