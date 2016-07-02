@@ -72,7 +72,7 @@ $waterLillies isa product, id "water-lillies", value "Claude Monet - The Water L
 (typed-product $waterLillies, product-type $painting) isa typing;
 $nightWatch isa product, id "night-watch", value "Rembrandt - The Night Watch";
 (typed-product $nightWatch, product-type $painting) isa typing;
-$monaLisa isa product, id "mona-lisa", value "Leonardo_da_Vinci - Mona Lisa";
+$monaLisa isa product, id "mona-lisa", value "Leonardo da Vinci - Mona Lisa";
 (typed-product $monaLisa, product-type $painting) isa typing;
 $raphael isa product, id "madonna-of-the-pinks", value "Raphael - The Madonna of the Pinks";
 (typed-product $raphael, product-type $painting) isa typing;
@@ -82,7 +82,7 @@ $sunflowers isa product, id "sunflowers", value "Vincent van Gogh - Sunflowers";
 (typed-product $sunflowers, product-type $painting) isa typing;
 $universe isa product, id "controller-of-the-universe", value "Diego Rivera - Controller of the Universe";
 (typed-product $universe, product-type $painting) isa typing;
-$grayTree isa product, id "gray-tree", value "Piet_Mondrian - Gray Tree";
+$grayTree isa product, id "gray-tree", value "Piet Mondrian - Gray Tree";
 (typed-product $grayTree, product-type $painting) isa typing;
 $lastJudgement isa product, id "last-judgement", value "Michelangelo - The Last Judgement";
 (typed-product $lastJudgement, product-type $painting) isa typing;
