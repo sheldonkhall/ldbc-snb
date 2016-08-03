@@ -18,30 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static io.mindmaps.graql.api.query.QueryBuilder.var;
-import static ldbc.snb.datagen.serializer.mindmaps.GraqlPersonSerializer.formatString;
-import static ldbc.snb.datagen.serializer.mindmaps.GraqlPersonSerializer.formatVar;
 
 public class GraqlInvariantSerializer extends InvariantSerializer {
 
-    final static String filePath = "./ldbc-snb-data-invariant.gql";
-    final static String filePathCategory = "./ldbc-snb-data-invariant-tag-class.gql";
-    final static String filePathTag = "./ldbc-snb-data-invariant-tag.gql";
-    final static int batchSize = 40;
-    final static int sleep = 200;
-
-
-    private List<Var> varList;
     private QueryBuilder queryBuilder;
-    private int serializedEntities;
+    private BufferedWriter bufferedWriter;
 
-    private BufferedWriter bufferedWriterAll;
-    private BufferedWriter bufferedWriterCategory;
-    private BufferedWriter bufferedWriterTag;
-
-    long startTime;
-    long endTime;
-
-    private Var var;
+    private long startTime;
 
     @Override
     public void reset() {
@@ -50,20 +33,13 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
 
     @Override
     public void initialize(Configuration conf, int reducerId) {
-        serializedEntities = 0;
+        System.out.println();
+        System.out.println("========================   PERSON INVARIANT    ========================");
         queryBuilder = QueryBuilder.build();
         startTime = System.currentTimeMillis();
-        varList = new ArrayList<>();
 
         try {
-            bufferedWriterAll = new BufferedWriter(new FileWriter(filePath, true));
-
-            bufferedWriterCategory = new BufferedWriter(new FileWriter(filePathCategory));
-            bufferedWriterCategory.write("insert \n");
-
-            bufferedWriterTag = new BufferedWriter(new FileWriter(filePathTag));
-            bufferedWriterTag.write("insert \n");
-
+            bufferedWriter = new BufferedWriter(new FileWriter(GraqlPersonSerializer.filePath, true));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -71,216 +47,112 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
 
     @Override
     public void close() {
-        endTime = System.currentTimeMillis();
         try {
-            String graqlString = queryBuilder.insert(varList).toString();
-            GraqlPersonSerializer.sendToEngine(graqlString, sleep);
-
-            graqlString = graqlString.replaceAll("; ", ";\n");
-            bufferedWriterAll.write(graqlString.substring(7) + "\n");
-
-            bufferedWriterAll.write("\n");
-            bufferedWriterAll.close();
-
-            bufferedWriterCategory.close();
-            bufferedWriterTag.close();
-
+            bufferedWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        long endTime = System.currentTimeMillis();
+        System.out.println();
         System.out.println("========================  TIME USED INVARIANT  ========================");
         System.out.println(endTime - startTime + " ms");
+        System.out.println("=======================================================================");
     }
 
     @Override
     protected void serialize(Place place) {
+        List<Var> varList = new ArrayList<>();
+        String idPlace = place.getType() + "-" + place.getId();
+//        System.out.println("SERIALISING PLACE ===> " + idPlace);
+        varList.add(var().isa(place.getType()).id(idPlace).value(place.getName())
+                .has("name", place.getName()));
 
-        serializedEntities++;
-        if (serializedEntities % batchSize == 0) {
-            try {
-                String graqlString = queryBuilder.insert(varList).toString();
-                GraqlPersonSerializer.sendToEngine(graqlString, sleep);
-
-                graqlString = graqlString.replaceAll("; ", ";\n");
-                bufferedWriterAll.write(graqlString.substring(7) + "\n");
-                varList = new ArrayList<>();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        String varNamePlace = place.getType() + "-" + place.getId();
-        System.out.println("SERIALISING PLACE ===> " + varNamePlace);
-        varList.add(var(varNamePlace).isa(place.getType()).id(varNamePlace).value(place.getName()));
-
-        String varNameResource = place.getType() + "_name_" + place.getName().hashCode();
-        varList.add(var(varNameResource).isa("name").value(place.getName()));
-
-        varList.add(var().isa("entity-resource")
-                .rel("entity-resource-value", var(varNameResource))
-                .rel("entity-resource-owner", var(varNamePlace)));
-
-        // relation sublocate
         if (place.getType().equals(Place.CITY)) {
-            String varNameLocation2 = Place.COUNTRY + "-" + Dictionaries.places.belongsTo(place.getId());
-            varList.add(var(varNameLocation2).isa(Place.COUNTRY).id(varNameLocation2));
-
+            String idPlace2 = Place.COUNTRY + "-" + Dictionaries.places.belongsTo(place.getId());
             varList.add(var().isa("sublocate")
-                    .rel("member-location", var(varNamePlace))
-                    .rel("container-location", var(varNameLocation2)));
+                    .rel("member-location", var().id(idPlace))
+                    .rel("container-location", var().id(idPlace2)));
 
         } else if (place.getType().equals(Place.COUNTRY)) {
-            String varNameLocation2 = Place.CONTINENT + "-" + Dictionaries.places.belongsTo(place.getId());
-            varList.add(var(varNameLocation2).isa(Place.CONTINENT).id(varNameLocation2));
-
+            String idPlace2 = Place.CONTINENT + "-" + Dictionaries.places.belongsTo(place.getId());
             varList.add(var().isa("sublocate")
-                    .rel("member-location", var(varNamePlace))
-                    .rel("container-location", var(varNameLocation2)));
+                    .rel("member-location", var().id(idPlace))
+                    .rel("container-location", var().id(idPlace2)));
         }
+
+        writeToFile(varList, "# " + idPlace);
     }
 
     @Override
     protected void serialize(Organization organization) {
+        List<Var> varList = new ArrayList<>();
+        String idOrganization = organization.type.toString() + "-" + organization.id;
+//        System.out.println("SERIALISING ORGANIZATION ===> " + idOrganization);
+        varList.add(var().isa(organization.type.toString())
+                .id(idOrganization).value(organization.name)
+                .has("name", organization.name));
 
-        serializedEntities++;
-        if (serializedEntities % batchSize == 0) {
-            try {
-                bufferedWriterAll.write("\n# a new batch\n");
-
-                String graqlString = queryBuilder.insert(varList).toString();
-                GraqlPersonSerializer.sendToEngine(graqlString, sleep);
-
-                graqlString = graqlString.replaceAll("; ", ";\n");
-                bufferedWriterAll.write(graqlString.substring(7) + "\n");
-                varList = new ArrayList<>();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        String varNameOrganization = organization.type.toString() + "-" + organization.id;
-        System.out.println("SERIALISING ORGANIZATION ===> " + varNameOrganization);
-        varList.add(var(varNameOrganization).isa(organization.type.toString())
-                .id(varNameOrganization).value(organization.name));
-
-        String varNameResource = varNameOrganization + "_name_" + organization.name.hashCode();
-        varList.add(var(varNameResource).isa("name").value(organization.name));
-
-        varList.add(var().isa("entity-resource")
-                .rel("entity-resource-value", var(varNameResource))
-                .rel("entity-resource-owner", var(varNameOrganization)));
-
-        // relation resides
         if (organization.type.toString().equals("university")) {
-            String varNamePlace = "city-" + organization.location;
-            varList.add(var(varNamePlace).isa("city").id(varNamePlace));
+            String idPlace = "city-" + organization.location;
 
             varList.add(var().isa("resides")
-                    .rel("located-subject", var(varNameOrganization))
-                    .rel("subject-location", var(varNamePlace)));
+                    .rel("located-subject", var().id(idOrganization))
+                    .rel("subject-location", var().id(idPlace)));
 
         } else if (organization.type.toString().equals("company")) {
-            String varNamePlace = "country-" + organization.location;
-            varList.add(var(varNamePlace).isa("country").id(varNamePlace));
+            String idPlace = "country-" + organization.location;
 
             varList.add(var().isa("resides")
-                    .rel("located-subject", var(varNameOrganization))
-                    .rel("subject-location", var(varNamePlace)));
+                    .rel("located-subject", var().id(idOrganization))
+                    .rel("subject-location", var().id(idPlace)));
         }
+
+        writeToFile(varList, "# " + idOrganization);
     }
 
     @Override
     protected void serialize(TagClass tagClass) {
-        try {
-            serializedEntities++;
-            if (serializedEntities % batchSize == 0) {
+        String idCategory = "category-" + tagClass.id;
+//        System.out.println("SERIALISING TAG CATEGORY ===> " + idCategory);
+        List<Var> varList = new ArrayList<>();
 
-                String graqlString = queryBuilder.insert(varList).toString();
-                GraqlPersonSerializer.sendToEngine(graqlString, sleep);
+        varList.add(var().isa("category").id(idCategory).value(tagClass.name)
+                .has("name", tagClass.name));
 
-                graqlString = formatString(graqlString);
-                bufferedWriterAll.write(graqlString);
-                varList = new ArrayList<>();
-            }
-
-            String varNameCategory = "category-" + tagClass.id;
-            System.out.println("SERIALISING TAG CATEGORY ===> " + varNameCategory);
-
-            var = var(varNameCategory).isa("category").id(varNameCategory).value(tagClass.name);
-            varList.add(var);
-            bufferedWriterCategory.write(formatVar(var));
-
-            String varNameResource = varNameCategory + "_name_" + tagClass.name.hashCode();
-            var = var(varNameResource).isa("name").value(tagClass.name);
-            varList.add(var);
-            bufferedWriterCategory.write(formatVar(var));
-
-            var = var().isa("entity-resource")
-                    .rel("entity-resource-value", var(varNameResource))
-                    .rel("entity-resource-owner", var(varNameCategory));
-            varList.add(var);
-            bufferedWriterCategory.write(formatVar(var));
-
-            // relation grouping
-            if (tagClass.parent != -1) {
-                String varNameCategorySuper = "category-" + tagClass.parent;
-                var = var(varNameCategorySuper).isa("category").id(varNameCategorySuper);
-                varList.add(var);
-                bufferedWriterCategory.write(formatVar(var));
-
-                var = var().isa("subgrouping")
-                        .rel("supergroup", var(varNameCategorySuper))
-                        .rel("subgroup", varNameCategory);
-                varList.add(var);
-                bufferedWriterCategory.write(formatVar(var));
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (tagClass.parent != -1) {
+            String idCategoryParent = "category-" + tagClass.parent;
+            varList.add(var().isa("subgrouping")
+                    .rel("supergroup", var().id(idCategoryParent))
+                    .rel("subgroup", var().id(idCategory)));
         }
+
+        writeToFile(varList, "# " + idCategory);
     }
 
     @Override
     protected void serialize(Tag tag) {
+        String idTag = "tag-" + tag.id;
+//        System.out.println("SERIALISING TAG ===> " + idTag);
+        List<Var> varList = new ArrayList<>();
+
+        varList.add(var().isa("tag").id(idTag).value(tag.name)
+                .has("name", tag.name));
+
+        String idCategory = "category-" + tag.tagClass;
+        varList.add(var().isa("grouping")
+                .rel("tag-group", var().id(idCategory))
+                .rel("grouped-tag", var().id(idTag)));
+
+        writeToFile(varList, "# " + idTag);
+    }
+
+    private void writeToFile(List<Var> varList, String info) {
         try {
-            serializedEntities++;
-            if (serializedEntities % batchSize == 0) {
-
-                String graqlString = queryBuilder.insert(varList).toString();
-                GraqlPersonSerializer.sendToEngine(graqlString, sleep);
-
-                graqlString = graqlString.replaceAll("; ", ";\n");
-                bufferedWriterAll.write(graqlString.substring(7) + "\n");
-                varList = new ArrayList<>();
-            }
-
-            String varNameTag = "tag-" + tag.id;
-            System.out.println("SERIALISING TAG ===> " + varNameTag);
-            var = var(varNameTag).isa("tag").id(varNameTag).value(tag.name);
-            varList.add(var);
-            bufferedWriterTag.write(formatVar(var));
-
-            String varNameResource = varNameTag + "_name_" + tag.name.hashCode();
-            var = var(varNameResource).isa("name").value(tag.name);
-            varList.add(var);
-            bufferedWriterTag.write(formatVar(var));
-
-            var = var().isa("entity-resource")
-                    .rel("entity-resource-value", var(varNameResource))
-                    .rel("entity-resource-owner", var(varNameTag));
-            varList.add(var);
-            bufferedWriterTag.write(formatVar(var));
-
-            String varNameCategory = "category-" + tag.tagClass;
-            var = var(varNameCategory).isa("category").id(varNameCategory);
-            varList.add(var);
-            bufferedWriterTag.write(formatVar(var));
-
-            var = var().isa("grouping")
-                    .rel("tag-group", var(varNameCategory))
-                    .rel("grouped-tag", var(varNameTag));
-            varList.add(var);
-            bufferedWriterTag.write(formatVar(var));
-
+            String graqlString = queryBuilder.insert(varList).toString();
+//            graqlString = graqlString.replace("; ", ";\n");
+            bufferedWriter.write(info + "\n");
+            bufferedWriter.write(graqlString.substring(7) + "\n\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
