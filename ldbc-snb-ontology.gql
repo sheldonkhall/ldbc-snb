@@ -1,5 +1,5 @@
 #string, long, double, boolean
-
+insert
 # some generic resources
 id "name" isa resource-type datatype string;
 id "title" isa resource-type datatype string;
@@ -214,4 +214,4 @@ id "grouping" isa relation-type
     has-role grouped-tag
     has-role tag-group;
 tag plays-role grouped-tag;
-category plays-role tag-group
+category plays-role tag-group;
