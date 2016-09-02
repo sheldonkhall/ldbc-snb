@@ -57,7 +57,8 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
 //        System.out.println("SERIALISING FORUM ===> " + idForum);
 
         varList.add(var().isa("forum")
-                .id(idForum).value(forum.title())
+                .id(idForum)
+//                .value(forum.title())
                 .has("title", forum.title())
                 .has("creation-date", dateString));
 
@@ -107,8 +108,9 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
 
         String idLanguage = "language-" + Dictionaries.languages.getLanguageName(post.language());
         if (!ids.contains(idLanguage)) {
-            varList.add(var().isa("language").id(idLanguage)
-                    .value(Dictionaries.languages.getLanguageName(post.language())));
+//            varList.add(var().isa("language").id(idLanguage)
+//                    .value(Dictionaries.languages.getLanguageName(post.language())));
+            varList.add(var().isa("language").id(idLanguage));
             ids.add(idLanguage);
         }
         varList.add(var().isa("written-in")

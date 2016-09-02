@@ -42,3 +42,7 @@ hs_err_pid*
 # junk files #
 *~
 
+# data files #
+ldbc-snb-data.gql
+test_data/
+

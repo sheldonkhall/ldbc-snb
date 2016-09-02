@@ -23,7 +23,7 @@ import static io.mindmaps.graql.api.query.QueryBuilder.var;
 
 public class GraqlPersonSerializer extends PersonSerializer {
 
-    final static String filePath = "/opt/mindmaps/ldbc-snb-data.gql";
+    final static String filePath = "./ldbc-snb-data.gql";
 
     private static Set<String> ids = new HashSet<>();
 
@@ -55,7 +55,7 @@ public class GraqlPersonSerializer extends PersonSerializer {
 
         try {
             bufferedWriter = new BufferedWriter(new FileWriter(filePath, false));
-            bufferedWriter.write("insert\n");
+//            bufferedWriter.write("insert\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -87,10 +87,12 @@ public class GraqlPersonSerializer extends PersonSerializer {
 
         String idPerson = "person-" + Long.toString(p.accountId());
         if (!ids.contains(idPerson)) {
-            varList.add(var().isa("person").id(idPerson).value(p.firstName() + " " + p.lastName()));
+//            varList.add(var().isa("person").id(idPerson).value(p.firstName() + " " + p.lastName()));
+            varList.add(var().isa("person").id(idPerson));
             ids.add(idPerson);
         } else {
-            varList.add(var().id(idPerson).value(p.firstName() + " " + p.lastName()));
+//            varList.add(var().id(idPerson).value(p.firstName() + " " + p.lastName()));
+            varList.add(var().id(idPerson));
         }
 
         String gender = (p.gender() == 1) ? "male" : "female";
@@ -112,8 +114,9 @@ public class GraqlPersonSerializer extends PersonSerializer {
         for (Integer language : p.languages()) {
             String idLanguage = "language-" + Dictionaries.languages.getLanguageName(language);
             if (!ids.contains(idLanguage)) {
-                varList.add(var().isa("language").id(idLanguage)
-                        .value(Dictionaries.languages.getLanguageName(language)));
+//                varList.add(var().isa("language").id(idLanguage)
+//                        .value(Dictionaries.languages.getLanguageName(language)));
+                varList.add(var().isa("language").id(idLanguage));
                 ids.add(idLanguage);
             }
             varList.add(var().isa("speaks")
