@@ -2,8 +2,10 @@
 
 PARAM_GENERATION=1 #param generation
 
-DEFAULT_HADOOP_HOME=/opt/mindmaps/dataset_generator/hadoop-2.6.0 #change to your hadoop folder
-DEFAULT_LDBC_SNB_DATAGEN_HOME=/opt/mindmaps/dataset_generator/mindmaps-benchmark-data #change to your ldbc_socialnet_dbgen folder
+SCRIPTPATH=`cd "$(dirname "$0")" && pwd -P`
+
+DEFAULT_HADOOP_HOME=$SCRIPTPATH/./hadoop-2.6.0 #change to your hadoop folder
+DEFAULT_LDBC_SNB_DATAGEN_HOME=$SCRIPTPATH/ #change to your ldbc_socialnet_dbgen folder
 
 # allow overriding configuration from outside via environment variables
 # i.e. you can do
@@ -16,6 +18,7 @@ LDBC_SNB_DATAGEN_HOME=${LDBC_SNB_DATAGEN_HOME:-$DEFAULT_LDBC_SNB_DATAGEN_HOME}
 export HADOOP_HOME
 export LDBC_SNB_DATAGEN_HOME
 
+cd $SCRIPTPATH
 mvn clean
 mvn -DskipTests assembly:assembly
 

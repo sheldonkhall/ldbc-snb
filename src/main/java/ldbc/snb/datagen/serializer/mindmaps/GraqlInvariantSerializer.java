@@ -65,7 +65,8 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
         List<Var> varList = new ArrayList<>();
         String idPlace = place.getType() + "-" + place.getId();
 //        System.out.println("SERIALISING PLACE ===> " + idPlace);
-        varList.add(var().isa(place.getType()).id(idPlace).value(place.getName())
+        varList.add(var().isa(place.getType()).id(idPlace)
+//                .value(place.getName())
                 .has("name", place.getName()));
 
         if (place.getType().equals(Place.CITY)) {
@@ -90,7 +91,8 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
         String idOrganization = organization.type.toString() + "-" + organization.id;
 //        System.out.println("SERIALISING ORGANIZATION ===> " + idOrganization);
         varList.add(var().isa(organization.type.toString())
-                .id(idOrganization).value(organization.name)
+                .id(idOrganization)
+//                .value(organization.name)
                 .has("name", organization.name));
 
         if (organization.type.toString().equals("university")) {
@@ -117,7 +119,8 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
 //        System.out.println("SERIALISING TAG CATEGORY ===> " + idCategory);
         List<Var> varList = new ArrayList<>();
 
-        varList.add(var().isa("category").id(idCategory).value(tagClass.name)
+        varList.add(var().isa("category").id(idCategory)
+//                .value(tagClass.name)
                 .has("name", tagClass.name));
 
         if (tagClass.parent != -1) {
@@ -136,7 +139,8 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
 //        System.out.println("SERIALISING TAG ===> " + idTag);
         List<Var> varList = new ArrayList<>();
 
-        varList.add(var().isa("tag").id(idTag).value(tag.name)
+        varList.add(var().isa("tag").id(idTag)
+//                .value(tag.name)
                 .has("name", tag.name));
 
         String idCategory = "category-" + tag.tagClass;
