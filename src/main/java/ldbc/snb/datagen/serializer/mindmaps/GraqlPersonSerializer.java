@@ -1,8 +1,7 @@
 package ldbc.snb.datagen.serializer.mindmaps;
 
-import io.mindmaps.graql.api.query.QueryBuilder;
-import io.mindmaps.graql.api.query.Var;
-
+import io.mindmaps.graql.Graql;
+import io.mindmaps.graql.Var;
 import ldbc.snb.datagen.dictionary.Dictionaries;
 import ldbc.snb.datagen.objects.Knows;
 import ldbc.snb.datagen.objects.Person;
@@ -19,7 +18,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static io.mindmaps.graql.api.query.QueryBuilder.var;
+import static io.mindmaps.graql.Graql.var;
+
 
 public class GraqlPersonSerializer extends PersonSerializer {
 
@@ -28,7 +28,6 @@ public class GraqlPersonSerializer extends PersonSerializer {
     private static Set<String> ids = new HashSet<>();
 
     private List<Var> varList;
-    private static QueryBuilder queryBuilder;
     private int serializedPersons;
 
     private BufferedWriter bufferedWriter;
@@ -50,7 +49,6 @@ public class GraqlPersonSerializer extends PersonSerializer {
     public void initialize(Configuration conf, int reducerId) {
 
         serializedPersons = 0;
-        queryBuilder = QueryBuilder.build();
         startTime = System.currentTimeMillis();
 
         try {
@@ -195,7 +193,7 @@ public class GraqlPersonSerializer extends PersonSerializer {
 
     private void writeToFile(Var var) {
         try {
-            String graqlString = queryBuilder.insert(var).toString();
+            String graqlString = Graql.insert(var).toString();
 //            graqlString = graqlString.replace("; ", ";\n");
             bufferedWriter.write(graqlString.substring(7) + "\n");
         } catch (IOException e) {
@@ -206,7 +204,7 @@ public class GraqlPersonSerializer extends PersonSerializer {
     private void writeToFile() {
         try {
             bufferedWriter.write("\n# person " + serializedPersons + "\n");
-            String graqlString = queryBuilder.insert(varList).toString();
+            String graqlString = Graql.insert(varList).toString();
 
 //            graqlString = graqlString.replace("; ", ";\n");
             bufferedWriter.write(graqlString.substring(7) + "\n\n");

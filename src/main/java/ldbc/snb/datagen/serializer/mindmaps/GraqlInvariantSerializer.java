@@ -1,8 +1,8 @@
 package ldbc.snb.datagen.serializer.mindmaps;
 
 
-import io.mindmaps.graql.api.query.QueryBuilder;
-import io.mindmaps.graql.api.query.Var;
+import io.mindmaps.graql.Graql;
+import io.mindmaps.graql.Var;
 import ldbc.snb.datagen.dictionary.Dictionaries;
 import ldbc.snb.datagen.objects.Organization;
 import ldbc.snb.datagen.objects.Place;
@@ -17,11 +17,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.mindmaps.graql.api.query.QueryBuilder.var;
+import static io.mindmaps.graql.Graql.var;
+
 
 public class GraqlInvariantSerializer extends InvariantSerializer {
 
-    private QueryBuilder queryBuilder;
     private BufferedWriter bufferedWriter;
 
     private long startTime;
@@ -35,7 +35,6 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
     public void initialize(Configuration conf, int reducerId) {
         System.out.println();
         System.out.println("========================   PERSON INVARIANT    ========================");
-        queryBuilder = QueryBuilder.build();
         startTime = System.currentTimeMillis();
 
         try {
@@ -153,7 +152,7 @@ public class GraqlInvariantSerializer extends InvariantSerializer {
 
     private void writeToFile(List<Var> varList, String info) {
         try {
-            String graqlString = queryBuilder.insert(varList).toString();
+            String graqlString = Graql.insert(varList).toString();
 //            graqlString = graqlString.replace("; ", ";\n");
             bufferedWriter.write(info + "\n");
             bufferedWriter.write(graqlString.substring(7) + "\n\n");

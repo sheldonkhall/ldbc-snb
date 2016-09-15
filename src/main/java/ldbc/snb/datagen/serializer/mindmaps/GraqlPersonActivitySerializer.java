@@ -1,7 +1,7 @@
 package ldbc.snb.datagen.serializer.mindmaps;
 
-import io.mindmaps.graql.api.query.QueryBuilder;
-import io.mindmaps.graql.api.query.Var;
+import io.mindmaps.graql.Graql;
+import io.mindmaps.graql.Var;
 import ldbc.snb.datagen.dictionary.Dictionaries;
 import ldbc.snb.datagen.objects.*;
 import ldbc.snb.datagen.serializer.PersonActivitySerializer;
@@ -13,11 +13,11 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.mindmaps.graql.api.query.QueryBuilder.var;
+import static io.mindmaps.graql.Graql.var;
+
 
 public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
 
-    static private QueryBuilder queryBuilder;
     private static Set<String> ids = new HashSet<>();
     private BufferedWriter bufferedWriter;
 
@@ -27,7 +27,6 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
     public void initialize(Configuration conf, int reducerId) {
         System.out.println("======================== Person Activity ========================");
         startTime = System.currentTimeMillis();
-        queryBuilder = QueryBuilder.build();
 
         try {
             bufferedWriter = new BufferedWriter(new FileWriter(GraqlPersonSerializer.filePath, true));
@@ -184,7 +183,7 @@ public class GraqlPersonActivitySerializer extends PersonActivitySerializer {
 
     private void writeToFile(List<Var> varList, String info) {
         try {
-            String graqlString = queryBuilder.insert(varList).toString();
+            String graqlString = Graql.insert(varList).toString();
 //            graqlString = graqlString.replace("; ", ";\n");
             bufferedWriter.write(info + "\n");
             bufferedWriter.write(graqlString.substring(7) + "\n\n");
