@@ -6,24 +6,30 @@ id "title" isa resource-type datatype string;
 id "creation-date" isa resource-type datatype string;
 id "browser-used" isa resource-type datatype string;
 id "location-ip" isa resource-type datatype string;
+id "snb-id" isa resource-type datatype string;
 
 # some basic entity-type with resource name
 id "place" isa entity-type
-    has-resource name;
+    has-resource name,
+    has-resource snb-id;
 id "organization" isa entity-type
-    has-resource name;
+    has-resource name,
+    has-resource snb-id;
 id "language" isa entity-type
-    has-resource name;
+    has-resource name,
+    has-resource snb-id;
 id "tag" isa entity-type
-    has-resource name;
+    has-resource name,
+    has-resource snb-id;
 id "category" isa entity-type
-    has-resource name;
+    has-resource name,
+    has-resource snb-id;
 
 # relation resides
 id "location" isa role-type is-abstract;
 place plays-role location;
 
-id "subject-location" ako location;
+id "subject-location" sub location;
 id "located-subject" isa role-type;
 id "resides" isa relation-type
     has-role subject-location
@@ -33,19 +39,19 @@ message plays-role located-subject;
 organization plays-role located-subject;
 
 # place and relation sublocate
-id "continent" ako place;
-id "country" ako place;
-id "city" ako place;
+id "continent" sub place;
+id "country" sub place;
+id "city" sub place;
 
-id "member-location" ako location;
-id "container-location" ako location;
+id "member-location" sub location;
+id "container-location" sub location;
 id "sublocate" isa relation-type
     has-role member-location
     has-role container-location;
 
 # organization
-id "university" ako organization;
-id "company" ako organization;
+id "university" sub organization;
+id "company" sub organization;
 
 # language
 id "speaker" isa role-type;
@@ -65,27 +71,25 @@ post plays-role post-with-language;
 language plays-role language-written;
 
 # person
-id "firstname" isa resource-type datatype string;
-id "lastname" isa resource-type datatype string;
 id "gender" isa resource-type datatype string;
 id "birthday" isa resource-type datatype string;
 id "email" isa resource-type datatype string;
 id "age" isa resource-type datatype long;
 
 id "person" isa entity-type
-    has-resource firstname
-    has-resource lastname
+    has-resource name
     has-resource gender
     has-resource birthday
     has-resource email
     has-resource age
     has-resource creation-date
     has-resource browser-used
-    has-resource location-ip;
+    has-resource location-ip
+    has-resource snb-id;
 
 id "acquaintance" isa role-type is-abstract;
-id "acquaintance1" ako acquaintance;
-id "acquaintance2" ako acquaintance;
+id "acquaintance1" sub acquaintance;
+id "acquaintance2" sub acquaintance;
 id "knows" isa relation-type
     has-role acquaintance1
     has-role acquaintance2
@@ -123,7 +127,8 @@ id "message" isa entity-type is-abstract
     has-resource browser-used
     has-resource location-ip
     has-resource content
-    has-resource length;
+    has-resource length
+    has-resource snb-id;
 
 # relation likes
 id "liked" isa role-type;
@@ -144,7 +149,7 @@ id "writes" isa relation-type
 message plays-role written;
 person plays-role writer;
 
-id "comment" ako message;
+id "comment" sub message;
 
 id "reply-owner" isa role-type;
 id "reply-content" isa role-type;
@@ -156,7 +161,7 @@ message plays-role reply-owner;
 
 "image-file" isa resource-type datatype string;
 
-id "post" ako message has-resource image-file;
+id "post" sub message has-resource image-file;
 
 # forum
 id "forum" isa entity-type
@@ -201,8 +206,8 @@ person plays-role tagged-subject;
 
 # tag class
 id "group" isa role-type is-abstract;
-id "subgroup" ako group;
-id "supergroup" ako group;
+id "subgroup" sub group;
+id "supergroup" sub group;
 id "subgrouping" isa relation-type
     has-role subgroup
     has-role supergroup;
