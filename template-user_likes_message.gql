@@ -1,0 +1,4 @@
+match
+  $message isa comment, has snb-id <Message.id>;
+  $person isa person, has snb-id <User.id>;
+insert (liker: $person, liked: $message) isa likes;

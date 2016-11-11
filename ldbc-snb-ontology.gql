@@ -157,7 +157,7 @@ id "reply" isa relation-type
     has-role reply-content
     has-role reply-owner;
 comment plays-role reply-content;
-message plays-role reply-owner;
+comment plays-role reply-owner;
 
 "image-file" isa resource-type datatype string;
 
