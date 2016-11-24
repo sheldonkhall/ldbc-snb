@@ -1,19 +1,19 @@
-## LDBC Social Network Benchmark - a data generator for MindmapsDB
+## LDBC Social Network Benchmark - a data generator for GRAKN.AI
 
-This generator generates a gql file containg SNB data that can be loaded into a MindmapsDB graph using MindmapsDB Engine. You can find more information on SNB data [here](https://github.com/ldbc/ldbc_snb_datagen), and more about MindmapsDB [here](https://mindmaps.io/pages/index.html). 
+This generator generates a gql file containg SNB data that can be loaded into a Grakn graph using Grakn Engine. You can find more information on SNB data [here](https://github.com/ldbc/ldbc_snb_datagen), and more about Grakn [here](https://grakn.ai/pages/index.html). 
 
 ## Loading a dataset
 
 A small sample dataset (`ldbc-snb-data-person-100.gql`). is included.
 
-To load this file into MindmapsDB, you need to do the following:
+To load this file into Grakn, you need to do the following:
 
-0 . Download a MindmapsDB distribution or clone and build MindmapsDB from [https://github.com/mindmapsdb/mindmapsdb](https://github.com/mindmapsdb/mindmapsdb). Further instructions for either option can be found in the [MindmapsDB setup guide](https://mindmaps.io/pages/documentation/get-started/setup-guide.html).
+0 . Download a Grakn distribution or clone and build Grakn from [https://github.com/graknlabs/grakn](https://github.com/graknlabs/grakn). Further instructions for either option can be found in the [Grakn setup guide](https://grakn.ai/pages/documentation/get-started/setup-guide.html).
 
-1 . Make sure you have MindmapsDB running:
+1 . Make sure you have Grakn running:
 ```
-cd [your MindmapsDB install directory]
-bin/mindmaps.sh start
+cd [your Grakn install directory]
+bin/grakn.sh start
 ```
 
 2 . Use the following command to load the schema file:
@@ -40,7 +40,7 @@ bin/graql.sh
 
 ``` 100 ```
 
-You can visualise a Graql query by using the [MindmapsDB visualiser](http://localhost:4567/#/shell). Make a query and Submit it to see the result.
+You can visualise a Graql query by using the [Grakn visualiser](http://localhost:4567/#/shell). Make a query and Submit it to see the result.
 
 ## Generating your own dataset
 
@@ -66,10 +66,10 @@ When it's done, you can find the generated graql file in the project folder:
 
 ``` ldbc-snb-data.gql ```
 
-Load the customized data to MindmapsDB using the following command:
+Load the customized data to Grakn using the following command:
 
 ``` curl -H "Content-Type: application/json" -X POST -d '{"path":"FILE_PATH/ldbc-snb-data-person.gql"}' http://localhost:4567/import/batch/data ```
 
 Note that you still need to load the schema file before loading your customized data!
 
-For help in using MindmapsDB, please visit our [discussion boards](https://discuss.mindmaps.io) or post over on [Stack Overflow](http://stackoverflow.com/questions/tagged/graql). 
+For help in using Grakn, please visit our [discussion boards](https://discuss.grakn.ai) or post over on [Stack Overflow](http://stackoverflow.com/questions/tagged/graql). 
