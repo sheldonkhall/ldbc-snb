@@ -23,8 +23,9 @@ mvn clean
 mvn -DskipTests assembly:assembly
 
 # hack because osx by default is not case sensitive
-zip -d $LDBC_SNB_DATAGEN_HOME/target/ldbc_snb_datagen-0.2.5-jar-with-dependencies.jar META-INF/license
+7z d -r $LDBC_SNB_DATAGEN_HOME/target/ldbc_snb_datagen-0.2.5-jar-with-dependencies.jar license
 
+export HADOOP_CLIENT_OPTS="-Xmx1024m"
 $HADOOP_HOME/bin/hadoop jar $LDBC_SNB_DATAGEN_HOME/target/ldbc_snb_datagen-0.2.5-jar-with-dependencies.jar $LDBC_SNB_DATAGEN_HOME/params.ini
 
 rm -f m*personFactors*
