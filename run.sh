@@ -20,10 +20,10 @@ export LDBC_SNB_DATAGEN_HOME
 
 cd $SCRIPTPATH
 mvn clean
-mvn -DskipTests assembly:assembly 
+mvn -DskipTests assembly:assembly
 
-// hack because osx by default is not case sensitive
-zip -d $LDBC_SNB_DATAGEN_HOME/target/ldbc_snb_datagen-0.2.5-jar-with-dependencies.jar META-INF/LICENSE
+# hack because osx by default is not case sensitive
+zip -d $LDBC_SNB_DATAGEN_HOME/target/ldbc_snb_datagen-0.2.5-jar-with-dependencies.jar META-INF/license
 
 $HADOOP_HOME/bin/hadoop jar $LDBC_SNB_DATAGEN_HOME/target/ldbc_snb_datagen-0.2.5-jar-with-dependencies.jar $LDBC_SNB_DATAGEN_HOME/params.ini
 
