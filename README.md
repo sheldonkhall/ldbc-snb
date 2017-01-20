@@ -1,75 +1,37 @@
-## LDBC Social Network Benchmark - a data generator for GRAKN.AI
 
-This generator generates a gql file containg SNB data that can be loaded into a Grakn graph using Grakn Engine. You can find more information on SNB data [here](https://github.com/ldbc/ldbc_snb_datagen), and more about Grakn [here](https://grakn.ai/pages/index.html). 
+![LDBC_LOGO](https://raw.github.com/wiki/ldbc/ldbc_socialnet_bm/images/ldbc-logo.png)
+LDBC-SNB Data Generator
+----------------------
 
-## Loading a dataset
+The LDBC-SNB Data Generator (DATAGEN) is the responsible of providing the data sets used by all the LDBC benchmarks. This data generator is designed to produce directed labeled graphs that mimic the characteristics of those graphs of real data. A detailed description of the schema produced by datagen, as well as the format of the output files, can be found in the latest version of official [LDBC SNB specification document](https://github.com/ldbc/ldbc_snb_docs)
 
-A small sample dataset (`ldbc-snb-data-person-100.gql`). is included.
 
-To load this file into Grakn, you need to do the following:
+ldbc_snb_datagen is part of the LDBC project (http://www.ldbc.eu/).
+ldbc_snb_datagen is GPLv3 licensed, to see detailed information about this license read the LICENSE.txt.
 
-0 . Download a Grakn distribution or clone and build Grakn from [https://github.com/graknlabs/grakn](https://github.com/graknlabs/grakn). Further instructions for either option can be found in the [Grakn setup guide](https://grakn.ai/pages/documentation/get-started/setup-guide.html).
+* **[Releases](https://github.com/ldbc-dev/ldbc_snb_datagen_0.2/releases)**
+* **[Configuration](https://github.com/ldbc-dev/ldbc_snb_datagen_0.2/wiki/Configuration)**
+* **[Compilation and Execution](https://github.com/ldbc-dev/ldbc_snb_datagen_0.2/wiki/Compilation_Execution)**
+* **[Advanced Configuration](https://github.com/ldbc-dev/ldbc_snb_datagen_0.2/wiki/Advanced_Configuration)**
+* **[Output](https://github.com/ldbc-dev/ldbc_snb_datagen_0.2/wiki/Data-Output)**
+* **[Troubleshooting](https://github.com/ldbc-dev/ldbc_snb_datagen_0.2/wiki/Throubleshooting)**
 
-1 . Make sure you have Grakn running:
-```
-cd [your Grakn install directory]
-bin/grakn.sh start
-```
+**Datasets**
 
-2 . Use the following command to load the schema file:
+Publicly available datasets can be found at the LDBC-SNB Amazon Bucket. These datasets are the official SNB datasets and were generated using version 0.2.6. They are available in the three official supported serializers: CSV, CSVMergeForeign and TTL. The bucket is configured in "Requester Pays" mode, thus in order to access them you need a properly set up AWS client.
+* http://ldbc-snb.s3.amazonaws.com/
 
-``` curl -H "Content-Type: application/json" -X POST -d '{"path":"FILE_PATH/ldbc-snb-ontology.gql"}' http://localhost:4567/import/ontology ```
+**Community provided tools**
 
-where FILE_PATH is the root folder of this project, which contains the Graql schema file `ldbc-snb-ontology.gql`.
+* **[Apache Flink Loader:] (https://github.com/s1ck/ldbc-flink-import)** A loader of LDBC datasets for Apache Flink
 
-3 . You can then load data using the following command:
+**Grakn test setup**
 
-``` curl -H "Content-Type: application/json" -X POST -d '{"path":"FILE_PATH/ldbc-snb-data-person-100.gql"}' http://localhost:4567/import/batch/data ```
+In order to run the SNB generator you need these pre-requisites:
 
-again, FILE_PATH is the project root path. Loading this dataset can take up to 30 seconds.
+* 7zip,
+* Hadoop 2.6.0,
+* Grakn.
 
-4 . Start graql shell:
-
-```
-bin/graql.sh
-```
-
-5 . Check if the data has been loaded by using the following graql query
-
-``` >>> compute count in person ```
-
-``` 100 ```
-
-You can visualise a Graql query by using the [Grakn visualiser](http://localhost:4567/#/shell). Make a query and Submit it to see the result.
-
-## Generating your own dataset
-
-If you want to generate your own dataset, you can customize it by modifying params.ini in project root folder.
-
-You can set the number of person in your dataset by setting the following
-``` ldbc.snb.datagen.generator.numPersons ```
-
-Or you can simply set the scale factor
-``` ldbc.snb.datagen.generator.scaleFactor ```
-
-For more information on how to customize the dataset, please check [LDBC on Github](https://github.com/ldbc/ldbc_snb_datagen).
-
-To generate the dataset, simply run the following command in the terminal:
-``` FILE_PATH/run.sh ```
-
-where FILE_PATH is the path of this project, containing the shell script.
-
-Generating the data can take from several minutes to several hours,
-depending on the size of the dataset.
-
-When it's done, you can find the generated graql file in the project folder:
-
-``` ldbc-snb-data.gql ```
-
-Load the customized data to Grakn using the following command:
-
-``` curl -H "Content-Type: application/json" -X POST -d '{"path":"FILE_PATH/ldbc-snb-data-person.gql"}' http://localhost:4567/import/batch/data ```
-
-Note that you still need to load the schema file before loading your customized data!
-
-For help in using Grakn, please visit our [discussion boards](https://discuss.grakn.ai) or post over on [Stack Overflow](http://stackoverflow.com/questions/tagged/graql). 
+Then edit the run.sh script so that the `DEFAULT_HADOOP_HOME` environmental variable points to the hadoop distribution.
+Finally execute the run.sh script to start loading to engine.

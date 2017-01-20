@@ -12,7 +12,8 @@ insert
 
 # person
 "person" sub entity
-    has-resource name;
+    has-resource name,
+    has-resource snb-id;
 
 "acquaintance" sub role is-abstract;
 "acquaintance1" sub acquaintance;
