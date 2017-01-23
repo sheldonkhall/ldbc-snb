@@ -2,6 +2,7 @@
 DEFAULT_HADOOP_HOME=/opt/grakn/hadoop-2.6.0 #change to your hadoop folder
 GRAKN_HOME=/opt/grakn/grakn-dist-0.11.0-SNAPSHOT
 
+# set script directory as working directory
 SCRIPTPATH=`cd "$(dirname "$0")" && pwd -P`
 DEFAULT_LDBC_SNB_DATAGEN_HOME=$SCRIPTPATH #change to your ldbc_socialnet_dbgen folder
 

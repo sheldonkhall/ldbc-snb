@@ -9,5 +9,11 @@ import java.util.Collection;
  * setting up the connections and sending and receiving data reliably.
  */
 public interface GraqlVarLoader {
+
+    /**
+     * Send the graql queries for execution in the chosen backend.
+     *
+     * @param queries graql queries to be executed.
+     */
     void sendQueries(Collection<InsertQuery> queries);
 }

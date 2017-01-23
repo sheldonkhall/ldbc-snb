@@ -24,23 +24,23 @@ import static ai.grakn.util.REST.WebPath.TASKS_URI;
 import static ai.grakn.util.REST.WebPath.TASKS_SCHEDULE_URI;
 
 /**
- *
+ * Uses the REST endpoint of Grakn engine to execute the queries.
  */
 public class GraqlVarLoaderRESTImpl implements GraqlVarLoader {
 
     String keyspace;
 
+    /**
+     * Constructor that assumes Grakn is listening on the default address.
+     *
+     * @param keyspace the keyspace to execute the queries against.
+     */
     public GraqlVarLoaderRESTImpl(String keyspace) {
         this.keyspace = keyspace;
     }
 
     @Override
     public void sendQueries(Collection<InsertQuery> queries) {
-        sendQueriesToLoader(queries);
-    }
-
-    private void sendQueriesToLoader(Collection<InsertQuery> queries) {
-
         HttpURLConnection currentConn = getHost("http://localhost:4567/tasks/schedule?"+getPostParams());
         String response = executePost(currentConn, getConfiguration(queries));
 
@@ -52,6 +52,12 @@ public class GraqlVarLoaderRESTImpl implements GraqlVarLoader {
         System.out.println(Json.read(response).at("id").asString());
     }
 
+    /**
+     * Instantiate the connection object and handle the error.
+     *
+     * @param host the engine URL plus required REST parameters.
+     * @return the connection.
+     */
     private HttpURLConnection getHost(String host) {
         HttpURLConnection urlConn = null;
         try {
@@ -65,6 +71,13 @@ public class GraqlVarLoaderRESTImpl implements GraqlVarLoader {
         return urlConn;
     }
 
+    /**
+     * POST the query to the REST API and return the response.
+     *
+     * @param connection the connection to send the request across.
+     * @param body the POST body.
+     * @return the response from the REST controller.
+     */
     private String executePost(HttpURLConnection connection, String body){
 
         try {
@@ -89,9 +102,10 @@ public class GraqlVarLoaderRESTImpl implements GraqlVarLoader {
     }
 
     /**
-     * Transform queries into Json configuration needed by the Loader task
+     * Transform queries into Json configuration needed by Grakn engine.
+     *
      * @param queries queries to include in configuration
-     * @return configuration for the loader task
+     * @return configuration for Grakn engine
      */
     private String getConfiguration(Collection<InsertQuery> queries){
         return Json.object()
@@ -114,6 +128,11 @@ public class GraqlVarLoaderRESTImpl implements GraqlVarLoader {
         return 0;
     }
 
+    /**
+     * Generate the required default parameters to use the Grakn engine REST API.
+     *
+     * @return the parameters.
+     */
     private String getPostParams(){
         return TASK_CLASS_NAME_PARAMETER + "=" + "ai.grakn.engine.loader.LoaderTask" + "&" +
                 TASK_RUN_AT_PARAMETER + "=" + new Date().getTime() + "&" +

@@ -33,5 +33,7 @@ In order to run the SNB generator you need these pre-requisites:
 * Hadoop 2.6.0,
 * Grakn.
 
-Then edit the run.sh script so that the `DEFAULT_HADOOP_HOME` environmental variable points to the hadoop distribution.
-Finally execute the run.sh script to start loading to engine.
+Then edit the runGrakn.sh script so that the `DEFAULT_HADOOP_HOME` environmental variable points to the Hadoop distribution, and `GRAKN_HOME` points to your Grakn distribution.
+Finally, start the Grakn engine and the SNB data for the small graph can be loaded by executing the Grakn loading script:
+
+`./runGrakn.sh`
