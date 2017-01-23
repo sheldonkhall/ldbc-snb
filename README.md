@@ -37,3 +37,5 @@ Then edit the runGrakn.sh script so that the `DEFAULT_HADOOP_HOME` environmental
 Finally, start the Grakn engine and the SNB data for the small graph can be loaded by executing the Grakn loading script:
 
 `./runGrakn.sh`
+
+NB: A bug in Graql shell currently means you will have to press ctrl+c when the runGrakn.sh script hangs after printing "{}".
