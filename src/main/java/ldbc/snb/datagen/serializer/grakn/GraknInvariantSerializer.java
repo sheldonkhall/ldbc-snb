@@ -23,6 +23,7 @@ public class GraknInvariantSerializer extends InvariantSerializer {
     public void initialize(Configuration conf, int reducerId) {
         loader = new GraqlVarLoaderRESTImpl(keyspace);
         System.out.println("====== Worker starting to serialize invariants. ======");
+        System.out.println("====== WARNING -- serializer omits unused tags. ======");
     }
 
     public void close() {
@@ -43,6 +44,7 @@ public class GraknInvariantSerializer extends InvariantSerializer {
         Var tagConceptWithName = Patterns.copyOf(tagConcept.admin());
         tagConceptWithName.has("name", String.valueOf(tag.name));
 
+        // If the tag is not in a relationship it is currently ignored.
         loader.sendQueries(Arrays.asList(match(tagConcept).insert(tagConceptWithName)));
     }
 
