@@ -48,8 +48,6 @@ public class GraqlVarLoaderRESTImpl implements GraqlVarLoader {
         if (responseCode != REST.HttpConn.OK) {
             throw new HTTPException(responseCode);
         }
-
-        System.out.println(Json.read(response).at("id").asString());
     }
 
     /**

@@ -29,6 +29,7 @@ public class GraknPersonSerializer extends PersonSerializer {
     @Override
     public void initialize(Configuration conf, int reducerId) {
         loader = new GraqlVarLoaderRESTImpl(keyspace);
+        System.out.println("====== Worker starting to serialize person. ======");
     }
 
     @Override

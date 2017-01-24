@@ -1,6 +1,7 @@
 package ldbc.snb.datagen.serializer.grakn;
 
 import ai.grakn.graql.Var;
+import ai.grakn.graql.internal.pattern.Patterns;
 import ldbc.snb.datagen.objects.Organization;
 import ldbc.snb.datagen.objects.Place;
 import ldbc.snb.datagen.objects.Tag;
@@ -11,6 +12,7 @@ import org.apache.hadoop.conf.Configuration;
 import java.util.Arrays;
 
 import static ai.grakn.graql.Graql.insert;
+import static ai.grakn.graql.Graql.match;
 import static ai.grakn.graql.Graql.var;
 
 public class GraknInvariantSerializer extends InvariantSerializer {
@@ -20,6 +22,7 @@ public class GraknInvariantSerializer extends InvariantSerializer {
 
     public void initialize(Configuration conf, int reducerId) {
         loader = new GraqlVarLoaderRESTImpl(keyspace);
+        System.out.println("====== Worker starting to serialize invariants. ======");
     }
 
     public void close() {
@@ -37,9 +40,10 @@ public class GraknInvariantSerializer extends InvariantSerializer {
     protected void serialize(final Tag tag) {
         Var tagConcept = var().isa("tag");
         tagConcept.has("snb-id", String.valueOf(tag.id));
-        tagConcept.has("name", String.valueOf(tag.name));
+        Var tagConceptWithName = Patterns.copyOf(tagConcept.admin());
+        tagConceptWithName.has("name", String.valueOf(tag.name));
 
-        loader.sendQueries(Arrays.asList(insert(tagConcept)));
+        loader.sendQueries(Arrays.asList(match(tagConcept).insert(tagConceptWithName)));
     }
 
     public void reset() {
