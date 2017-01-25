@@ -41,7 +41,7 @@ public class GraknPersonSerializer extends PersonSerializer {
     protected void serialize(Person p) {
         Var personConcept = var().isa("person");
         personConcept.has("snb-id", Long.toString(p.accountId()));
-        personConcept.has("name", String.valueOf(p.firstName() + " " + p.lastName()));
+        personConcept.has("first-name", String.valueOf(p.firstName() + " " + p.lastName()));
 
         loader.sendQueries(Arrays.asList(insert(personConcept)));
     }

@@ -1,6 +1,7 @@
 #string, long, double, boolean
 insert
 # some generic resources
+"first-name" sub resource datatype string;
 "name" sub resource datatype string;
 "creation-date" sub resource datatype string;
 "snb-id" sub resource datatype string;
@@ -12,7 +13,7 @@ insert
 
 # person
 "person" sub entity
-    has-resource name,
+    has-resource first-name,
     has-resource snb-id;
 
 "acquaintance" sub role is-abstract;
