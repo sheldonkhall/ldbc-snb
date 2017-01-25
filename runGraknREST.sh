@@ -24,7 +24,7 @@ export GRAKN_HOME
 $GRAKN_HOME/bin/graql.sh -k SNB -f $SCRIPTPATH/./graql/snb-ontology-simple.gql
 
 # generate params.ini file that uses Grakn serializers
-cat $LDBC_SNB_DATAGEN_HOME/params.ini | sed 's/snb.interactive.CSV/grakn.Grakn/' > $TEMP_PARAM_FILE
+cat $LDBC_SNB_DATAGEN_HOME/params.ini | sed 's/small.CSV/grakn.Grakn/' > $TEMP_PARAM_FILE
 
 # compile the data loader
 mvn clean

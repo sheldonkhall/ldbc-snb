@@ -30,12 +30,23 @@ Publicly available datasets can be found at the LDBC-SNB Amazon Bucket. These da
 In order to run the SNB generator you need these pre-requisites:
 
 * 7zip,
-* Hadoop 2.6.0,
-* Grakn.
+* Grakn,
 
-Then edit the runGrakn.sh script so that the `DEFAULT_HADOOP_HOME` environmental variable points to the Hadoop distribution, and `GRAKN_HOME` points to your Grakn distribution.
-Finally, start the Grakn engine and the SNB data for the small graph can be loaded by executing the Grakn loading script:
+and the `GRAKN_HOME` environmental variable should be set in the `runGrakn*.sh` scripts so that it points to your Grakn distribution.
+Finally, start the Grakn engine and the SNB data for the small graph can be loaded by executing either of the Grakn loading scripts:
 
-`./runGrakn.sh`
+`./runGraknREST.sh`
 
-NB: A bug in Graql shell currently means you will have to press ctrl+c when the runGrakn.sh script hangs after printing "{}".
+`./runGraknMigrator.sh`
+
+NB: A bug in Graql shell currently means you will have to press ctrl+c when the `runGrakn*.sh` script hangs after printing "{}".
+
+**Grakn REST loader**
+
+This script runs the snb data generator with serialisers that send the insert queries directly to the Grakn engine REST API.
+
+**Grakn Migrator loader**
+
+This script runs the snb generator to create CSV files. These CSV files are then imported using the migrator.
+
+NB: this script is only capable of loading data from a single machine.
