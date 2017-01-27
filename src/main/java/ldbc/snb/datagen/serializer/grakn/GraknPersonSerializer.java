@@ -1,5 +1,6 @@
 package ldbc.snb.datagen.serializer.grakn;
 
+import ai.grakn.Grakn;
 import ai.grakn.graql.Var;
 import ldbc.snb.datagen.objects.Knows;
 import ldbc.snb.datagen.objects.Person;
@@ -9,6 +10,8 @@ import ldbc.snb.datagen.serializer.PersonSerializer;
 import org.apache.hadoop.conf.Configuration;
 
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
 
 import static ai.grakn.graql.Graql.insert;
 import static ai.grakn.graql.Graql.var;
@@ -18,7 +21,6 @@ import static ai.grakn.graql.Graql.var;
  */
 public class GraknPersonSerializer extends PersonSerializer {
 
-    final String keyspace = "SNB";
     GraqlVarLoader loader;
 
     @Override
@@ -28,8 +30,11 @@ public class GraknPersonSerializer extends PersonSerializer {
 
     @Override
     public void initialize(Configuration conf, int reducerId) {
-        loader = new GraqlVarLoaderRESTImpl(keyspace);
         System.out.println("====== Worker starting to serialize person. ======");
+        String keyspace = Objects.requireNonNull(conf.get("grakn.engine.keyspace"));
+        String potentialEngineURI = conf.get("grakn.engine.uri");
+        String engineURI = potentialEngineURI != null ? potentialEngineURI : Grakn.DEFAULT_URI;
+        loader = new GraqlVarLoaderRESTImpl(keyspace, engineURI);
     }
 
     @Override
