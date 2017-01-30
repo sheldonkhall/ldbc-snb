@@ -37,7 +37,7 @@ Finally, start the Grakn engine and the SNB data for the small graph can be load
 
 `./runGraknREST.sh`
 
-`./runGraknMigrator.sh localhost:4567 SNB`
+`./runGraknMigrator.sh localhost SNB`
 
 **Grakn REST loader**
 
