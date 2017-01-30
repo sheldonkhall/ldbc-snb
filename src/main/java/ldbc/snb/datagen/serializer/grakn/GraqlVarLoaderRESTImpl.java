@@ -1,5 +1,6 @@
 package ldbc.snb.datagen.serializer.grakn;
 
+import ai.grakn.Grakn;
 import ai.grakn.graql.InsertQuery;
 import ai.grakn.util.REST;
 import mjson.Json;
@@ -29,6 +30,7 @@ import static ai.grakn.util.REST.WebPath.TASKS_SCHEDULE_URI;
 public class GraqlVarLoaderRESTImpl implements GraqlVarLoader {
 
     String keyspace;
+    String engineUri;
 
     /**
      * Constructor that assumes Grakn is listening on the default address.
@@ -37,6 +39,17 @@ public class GraqlVarLoaderRESTImpl implements GraqlVarLoader {
      */
     public GraqlVarLoaderRESTImpl(String keyspace) {
         this.keyspace = keyspace;
+        this.engineUri = Grakn.DEFAULT_URI;
+    }
+
+    /**
+     * Constructor that requires both the keyspace and the address for Grakn.
+     * @param keyspace the keyspace to execute the queries against
+     * @param engineURI the address of the Grakn engine i.e. localhost:4567
+     */
+    public GraqlVarLoaderRESTImpl(String keyspace, String engineURI) {
+        this.keyspace = keyspace;
+        this.engineUri = engineURI;
     }
 
     @Override
