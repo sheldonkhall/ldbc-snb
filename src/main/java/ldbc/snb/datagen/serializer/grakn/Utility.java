@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 class Utility {
-    final static String keyspace = "SNB";
-
     private static final int numberOfRetries = 10;
     private static final int initialSleepTime = 100;
     private static final double exponentialSleepPower = 2;
