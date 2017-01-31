@@ -1,25 +1,33 @@
 package ldbc.snb.datagen.serializer.grakn;
 
+import ai.grakn.Grakn;
+import ai.grakn.GraknGraph;
 import ai.grakn.graql.Var;
+import com.google.common.collect.Lists;
 import ldbc.snb.datagen.objects.Comment;
 import ldbc.snb.datagen.objects.Forum;
 import ldbc.snb.datagen.objects.ForumMembership;
 import ldbc.snb.datagen.objects.Like;
+import ldbc.snb.datagen.objects.Message;
 import ldbc.snb.datagen.objects.Photo;
 import ldbc.snb.datagen.objects.Post;
 import org.apache.hadoop.conf.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 
 import static ai.grakn.graql.Graql.var;
+import static ldbc.snb.datagen.serializer.grakn.Utility.flush;
+import static ldbc.snb.datagen.serializer.grakn.Utility.keyspace;
 
 /**
  *
  */
 public class PersonActivitySerializer extends ldbc.snb.datagen.serializer.PersonActivitySerializer {
 
-    final String keyspace = "SNB";
+    private GraknGraph graph;
+    private static final Logger LOGGER = LoggerFactory.getLogger(PersonActivitySerializer.class);
 
     @Override
     public void reset() {
@@ -28,12 +36,12 @@ public class PersonActivitySerializer extends ldbc.snb.datagen.serializer.Person
 
     @Override
     public void initialize(Configuration conf, int reducerId) {
-
+        graph = Grakn.factory(Grakn.DEFAULT_URI, keyspace).getGraph();
     }
 
     @Override
     public void close() {
-
+        graph.close();
     }
 
     @Override
@@ -43,44 +51,24 @@ public class PersonActivitySerializer extends ldbc.snb.datagen.serializer.Person
 
     @Override
     protected void serialize(Post post) {
-        Collection<Var> vars = new ArrayList<>();
-
-        vars.add(var("comment").isa("comment")
-                .has("snb-id", Long.toString(post.messageId()))
-                .has("content", post.content())
-                .has("creation-date", Long.toString(post.creationDate())));
-
-        vars.add(var("author").isa("person").has("snb-id", Long.toString(post.author().accountId())));
-
-        vars.add(var().isa("writes").rel("writer", "author").rel("written", "comment"));
-
-        for (Integer t : post.tags()) {
-            vars.add(var("tag-" + t.toString()).isa("tag").has("snb-id", t.toString()));
-
-            vars.add(var().isa("tagging").rel("tagged-subject", "comment").rel("subject-tag", "tag-" + t.toString()));
-        }
+        LOGGER.debug("Serialising Post");
+        serialiseMessage(post);
     }
 
     @Override
     protected void serialize(Comment comment) {
-        Collection<Var> vars = new ArrayList<>();
+        LOGGER.debug("Serialising Comment");
+        serialiseMessage(comment);
 
-        vars.add(var("comment").isa("comment")
-                .has("snb-id", Long.toString(comment.messageId()))
-                .has("content", comment.content())
-                .has("creation-date", Long.toString(comment.creationDate())));
-
-        vars.add(var("original-comment").isa("comment").has("snb-id", Long.toString(comment.replyOf())));
-
-        vars.add(var().isa("reply").rel("reply-owner", "original-comment").rel("reply-content", "comment"));
-
-        vars.add(var("author").isa("person").has("snb-id", Long.toString(comment.author().accountId())));
-
-        for (Integer t : comment.tags()) {
-            vars.add(var("tag-" + t.toString()).isa("tag").has("snb-id", t.toString()));
-
-            vars.add(var().isa("tagging").rel("tagged-subject", "comment").rel("subject-tag", "tag-" + t.toString()));
-        }
+        String snbId = Long.toString(comment.messageId());
+        String snbId2 = Long.toString(comment.replyOf());
+        Var commentConcept2 = var(snbId2).isa("comment").has("snb-id", snbId2);
+        flush(graph, Utility::putEntity, Collections.singletonList(commentConcept2));
+        Var reply = var().isa("reply")
+                .rel("reply-content", snbId)
+                .rel("reply-owner", snbId2);
+        flush(graph, Utility::putRelation, Lists.newArrayList(reply,
+                var(snbId).has("snb-id", snbId), var(snbId2).has("snb-id", snbId2)));
     }
 
     @Override
@@ -95,8 +83,54 @@ public class PersonActivitySerializer extends ldbc.snb.datagen.serializer.Person
 
     @Override
     protected void serialize(Like like) {
-        Var person = var("person").isa("person").has("snb-id", Long.toString(like.user));
-        Var comment = var("comment").isa("comment").has("snb-id", Long.toString(like.messageId));
-        Var relation = var().isa("likes").rel("liker", "person").rel("liked", "comment");
+        LOGGER.debug("Serialising Likes");
+        String snbIdPerson = "person-" + Long.toString(like.user);
+        String snbIdMessage = "message-" + Long.toString(like.messageId);
+        Var person = var(snbIdPerson).isa("person").has("snb-id", snbIdPerson);
+        flush(graph, Utility::putEntity, Collections.singletonList(person));
+
+        Var relation = var().isa("likes")
+                .rel("liker", snbIdPerson)
+                .rel("liked", snbIdMessage);
+        flush(graph, Utility::putRelation, Lists.newArrayList(relation,
+                var(snbIdPerson).has("snb-id", snbIdPerson),
+                var(snbIdMessage).has("snb-id", snbIdMessage)));
+    }
+
+    private void serialiseMessage(Message message) {
+        String snbIdMessage = "message-" + Long.toString(message.messageId());
+
+        Var commentConcept = var(snbIdMessage).isa("comment").has("snb-id", snbIdMessage);
+        flush(graph, Utility::putEntity, Collections.singletonList(commentConcept));
+
+        Var hasResources = var(snbIdMessage)
+                .has("content", message.content())
+                .has("creation-date", Long.toString(message.creationDate()));
+        flush(graph, Utility::putRelation, Lists.newArrayList(hasResources,
+                var(snbIdMessage).has("snb-id", snbIdMessage)));
+
+        String snbIdPerson = "person-" + Long.toString(message.author().accountId());
+        Var person = var(snbIdPerson).isa("person").has("snb-id", snbIdPerson);
+        flush(graph, Utility::putEntity, Collections.singletonList(person));
+
+        Var hasCreator = var().isa("writes")
+                .rel("writer", snbIdPerson)
+                .rel("written", snbIdMessage);
+        flush(graph, Utility::putRelation, Lists.newArrayList(hasCreator,
+                var(snbIdMessage).has("snb-id", snbIdMessage),
+                var(snbIdPerson).has("snb-id", snbIdPerson)));
+
+        for (Integer t : message.tags()) {
+            String snbIdTag = "tag-" + Integer.toString(t);
+            Var tagConcept = var(snbIdTag).isa("tag").has("snb-id", snbIdTag);
+            flush(graph, Utility::putEntity, Collections.singletonList(tagConcept));
+
+            Var tagging = var().isa("tagging")
+                    .rel("tagged-subject", snbIdMessage)
+                    .rel("subject-tag", snbIdTag);
+            flush(graph, Utility::putRelation, Lists.newArrayList(tagging,
+                    var(snbIdMessage).has("snb-id", snbIdMessage),
+                    var(snbIdTag).has("snb-id", snbIdTag)));
+        }
     }
 }

@@ -9,6 +9,8 @@ import ldbc.snb.datagen.objects.Person;
 import ldbc.snb.datagen.objects.StudyAt;
 import ldbc.snb.datagen.objects.WorkAt;
 import org.apache.hadoop.conf.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 
@@ -22,6 +24,7 @@ import static ldbc.snb.datagen.serializer.grakn.Utility.keyspace;
 public class PersonSerializer extends ldbc.snb.datagen.serializer.PersonSerializer {
 
     private GraknGraph graph;
+    private static final Logger LOGGER = LoggerFactory.getLogger(PersonSerializer.class);
 
     @Override
     public void reset() {
@@ -40,14 +43,14 @@ public class PersonSerializer extends ldbc.snb.datagen.serializer.PersonSerializ
 
     @Override
     protected void serialize(Person p) {
-        String snbId = Long.toString(p.accountId());
+        LOGGER.debug("Serialising Person");
+        String snbIdPerson = "person-" + Long.toString(p.accountId());
 
-        Var personConcept = var(snbId).isa("person");
-        personConcept.has("snb-id", snbId);
+        Var personConcept = var(snbIdPerson).isa("person").has("snb-id", snbIdPerson);
         flush(graph, Utility::putEntity, Collections.singletonList(personConcept));
 
-        Var hasName = var(snbId).has("name", String.valueOf(p.firstName() + " " + p.lastName()));
-        flush(graph, Utility::putRelation, Lists.newArrayList(hasName, var(snbId).has("snb-id", snbId)));
+        Var hasName = var(snbIdPerson).has("name", String.valueOf(p.firstName() + " " + p.lastName()));
+        flush(graph, Utility::putRelation, Lists.newArrayList(hasName, var(snbIdPerson).has("snb-id", snbIdPerson)));
     }
 
     @Override
@@ -62,13 +65,17 @@ public class PersonSerializer extends ldbc.snb.datagen.serializer.PersonSerializ
 
     @Override
     protected void serialize(Person p, Knows knows) {
-        String snbId1 = Long.toString(p.accountId());
-        String snbId2 = Long.toString(knows.to().accountId());
-        Var knownPerson = var(snbId2).isa("person").has("snb-id", snbId2);
+        LOGGER.debug("Serialising Knows");
+        String snbIdPerson1 = "person-" + Long.toString(p.accountId());
+        String snbIdPerson2 = "person-" + Long.toString(knows.to().accountId());
+        Var knownPerson = var(snbIdPerson2).isa("person").has("snb-id", snbIdPerson2);
         flush(graph, Utility::putEntity, Collections.singletonList(knownPerson));
 
-        Var relation = var().isa("knows").rel("acquaintance1", snbId1).rel("acquaintance2", snbId2);
+        Var relation = var().isa("knows")
+                .rel("acquaintance1", snbIdPerson1)
+                .rel("acquaintance2", snbIdPerson2);
         flush(graph, Utility::putRelation, Lists.newArrayList(relation,
-                var(snbId1).has("snb-id", snbId1), var(snbId2).has("snb-id", snbId2)));
+                var(snbIdPerson1).has("snb-id", snbIdPerson1),
+                var(snbIdPerson2).has("snb-id", snbIdPerson2)));
     }
 }

@@ -3,7 +3,6 @@ package ldbc.snb.datagen.serializer.grakn;
 import ai.grakn.GraknGraph;
 import ai.grakn.graql.QueryBuilder;
 import ai.grakn.graql.Var;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
@@ -16,7 +15,7 @@ class Utility {
     private static final int initialSleepTime = 100;
     private static final double exponentialSleepPower = 2;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Utility.class);
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Utility.class);
 
     static void flush(GraknGraph graph) {
         boolean hasFailed;
@@ -26,17 +25,17 @@ class Utility {
             try {
                 graph.commit();
             } catch (Exception e) {
-                LOGGER.debug("Exception: " + e.getMessage());
+                LOGGER.info("Exception: " + e.getMessage());
                 hasFailed = true;
                 numberOfFailures++;
-                LOGGER.debug("Number of failures: " + numberOfFailures);
+                LOGGER.info("Number of failures: " + numberOfFailures);
                 if (numberOfFailures >= numberOfRetries) {
-                    LOGGER.debug("REACHED MAX NUMBER OF RETRIES !!!!!!!!");
+                    LOGGER.info("REACHED MAX NUMBER OF RETRIES !!!!!!!!");
                     throw new RuntimeException(e);
                 }
                 try {
                     long sleepTime = (long) (initialSleepTime * Math.pow(exponentialSleepPower, numberOfFailures));
-                    LOGGER.debug("Start sleeping for " + sleepTime + " ms");
+                    LOGGER.info("Start sleeping for " + sleepTime + " ms");
                     Thread.sleep(sleepTime);
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
@@ -54,17 +53,17 @@ class Utility {
                 varConsumer.accept(graph.graql(), varList);
                 graph.commit();
             } catch (Exception e) {
-                LOGGER.debug("Exception: " + e.getMessage());
+                LOGGER.info("Exception: " + e.getMessage());
                 hasFailed = true;
                 numberOfFailures++;
-                LOGGER.debug("Number of failures: " + numberOfFailures);
+                LOGGER.info("Number of failures: " + numberOfFailures);
                 if (numberOfFailures >= numberOfRetries) {
-                    LOGGER.debug("REACHED MAX NUMBER OF RETRIES !!!!!!!!");
+                    LOGGER.info("REACHED MAX NUMBER OF RETRIES !!!!!!!!");
                     throw new RuntimeException(e);
                 }
                 try {
                     long sleepTime = (long) (initialSleepTime * Math.pow(exponentialSleepPower, numberOfFailures));
-                    LOGGER.debug("Start sleeping for " + sleepTime + " ms");
+                    LOGGER.info("Start sleeping for " + sleepTime + " ms");
                     Thread.sleep(sleepTime);
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
@@ -74,12 +73,17 @@ class Utility {
     }
 
     static void putEntity(QueryBuilder queryBuilder, List<Var> varList) {
+//        LOGGER.info("Put entity ... ");
         if (!queryBuilder.match(varList.get(0)).ask().execute()) {
             queryBuilder.insert(varList.get(0)).execute();
         }
+//        else {
+//            LOGGER.info("Entity already exists ... ");
+//        }
     }
 
     static void putRelation(QueryBuilder queryBuilder, List<Var> varList) {
+//        LOGGER.info("Put relation ... ");
         queryBuilder.match(varList.subList(1, varList.size())).insert(varList.get(0)).execute();
     }
 }
