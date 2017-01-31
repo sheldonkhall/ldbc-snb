@@ -13,10 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
+import java.util.Objects;
 
 import static ai.grakn.graql.Graql.var;
 import static ldbc.snb.datagen.serializer.grakn.Utility.flush;
-import static ldbc.snb.datagen.serializer.grakn.Utility.keyspace;
 
 /**
  *
@@ -33,7 +33,7 @@ public class PersonSerializer extends ldbc.snb.datagen.serializer.PersonSerializ
 
     @Override
     public void initialize(Configuration conf, int reducerId) {
-        graph = Grakn.factory(Grakn.DEFAULT_URI, keyspace).getGraph();
+        graph = Grakn.factory(Grakn.DEFAULT_URI, Objects.requireNonNull(conf.get("grakn.engine.keyspace"))).getGraph();
     }
 
     @Override
@@ -49,7 +49,7 @@ public class PersonSerializer extends ldbc.snb.datagen.serializer.PersonSerializ
         Var personConcept = var(snbIdPerson).isa("person").has("snb-id", snbIdPerson);
         flush(graph, Utility::putEntity, Collections.singletonList(personConcept));
 
-        Var hasName = var(snbIdPerson).has("name", String.valueOf(p.firstName() + " " + p.lastName()));
+        Var hasName = var(snbIdPerson).has("first-name", String.valueOf(p.firstName()));
         flush(graph, Utility::putRelation, Lists.newArrayList(hasName, var(snbIdPerson).has("snb-id", snbIdPerson)));
     }
 
