@@ -39,6 +39,8 @@ Finally, start the Grakn engine and the SNB data for the small graph can be load
 
 `./runGraknMigrator.sh localhost SNB`
 
+`./runGraknGraql.sh`
+
 **Grakn REST loader**
 
 This script runs the snb data generator with serialisers that send the insert queries directly to the Grakn engine REST API.
@@ -51,5 +53,12 @@ If you need to load to a remote engine instance you can use these parameters in 
 
 This script runs the snb generator to create CSV files. These CSV files are then imported using the migrator.
 The migrator script takes two arguments: the address of the engine instance and the keyspace to load that data in.
+
+**Grakn Graql loader**
+
+This script runs the snb data generator with serialisers that execute match and insert queries directly.
+You can use a different keyspace by change the parameter in the params.ini file:
+
+* grakn.engine.keyspace
 
 NB: this script is only capable of loading data from a single machine.
