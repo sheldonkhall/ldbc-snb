@@ -60,7 +60,6 @@ public class GraknPersonActivitySerializer extends PersonActivitySerializer {
                 .has("creation-date", Long.toString(post.creationDate())));
 
         Var existingAuthor = var("author").isa("person").has("snb-id", Long.toString(post.author().accountId()));
-        vars.add(existingAuthor);
 
         vars.add(var().isa("writes").rel("writer", "author").rel("written", "comment"));
 
@@ -87,7 +86,6 @@ public class GraknPersonActivitySerializer extends PersonActivitySerializer {
         vars.add(var().isa("reply").rel("reply-owner","original-comment").rel("reply-content","comment"));
 
         Var existingAuthor = var("author").isa("person").has("snb-id", Long.toString(comment.author().accountId()));
-        vars.add(existingAuthor);
 
         for( Integer t : comment.tags() ) {
             vars.add(var("tag-"+t.toString()).isa("tag").has("snb-id", t.toString()));
@@ -114,6 +112,6 @@ public class GraknPersonActivitySerializer extends PersonActivitySerializer {
         Var comment = var("comment").isa("comment").has("snb-id", Long.toString(like.messageId));
         Var relation = var().isa("likes").rel("liker", "person").rel("liked", "comment");
 
-        loader.sendQueries(Arrays.asList(match(person).insert(person,comment,relation)));
+        loader.sendQueries(Arrays.asList(match(person).insert(comment,relation)));
     }
 }

@@ -42,10 +42,8 @@ public class GraknInvariantSerializer extends InvariantSerializer {
     }
 
     protected void serialize(final Tag tag) {
-        Var tagConcept = var().isa("tag");
-        tagConcept.has("snb-id", String.valueOf(tag.id));
-        Var tagConceptWithName = Patterns.copyOf(tagConcept.admin());
-        tagConceptWithName.has("name", String.valueOf(tag.name));
+        Var tagConcept = var("tagConcept").isa("tag").has("snb-id", String.valueOf(tag.id));
+        Var tagConceptWithName = var("tagConcept").has("name", String.valueOf(tag.name));
 
         // If the tag is not in a relationship it is currently ignored.
         loader.sendQueries(Arrays.asList(match(tagConcept).insert(tagConceptWithName)));
