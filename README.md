@@ -54,6 +54,8 @@ If you need to load to a remote engine instance you can use these parameters in 
 This script runs the snb generator to create CSV files. These CSV files are then imported using the migrator.
 The migrator script takes two arguments: the address of the engine instance and the keyspace to load that data in.
 
+NB: Currently the migrator requires engine to be running at the endpoint and on the machine generating the data.
+
 **Grakn Graql loader**
 
 This script runs the snb data generator with serialisers that execute match and insert queries directly.

@@ -20,9 +20,6 @@ import static ai.grakn.util.REST.Request.TASK_LOADER_INSERTS;
 import static ai.grakn.util.REST.Request.TASK_CLASS_NAME_PARAMETER;
 import static ai.grakn.util.REST.Request.TASK_CREATOR_PARAMETER;
 import static ai.grakn.util.REST.Request.TASK_RUN_AT_PARAMETER;
-import static ai.grakn.util.REST.Request.TASK_STATUS_PARAMETER;
-import static ai.grakn.util.REST.WebPath.TASKS_URI;
-import static ai.grakn.util.REST.WebPath.TASKS_SCHEDULE_URI;
 
 /**
  * Uses the REST endpoint of Grakn engine to execute the queries.
@@ -54,7 +51,7 @@ public class GraqlVarLoaderRESTImpl implements GraqlVarLoader {
 
     @Override
     public void sendQueries(Collection<InsertQuery> queries) {
-        HttpURLConnection currentConn = getHost("http://localhost:4567/tasks/schedule?"+getPostParams());
+        HttpURLConnection currentConn = getHost("http://" + engineUri + "/tasks/schedule?"+getPostParams());
         String response = executePost(currentConn, getConfiguration(queries));
 
         int responseCode = getResponseCode(currentConn);
