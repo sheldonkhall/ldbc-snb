@@ -21,7 +21,8 @@ export LDBC_SNB_DATAGEN_HOME
 export GRAKN_HOME
 
 # load the ontology to the SNB keyspace
-$GRAKN_HOME/bin/graql.sh -k SNB -f $SCRIPTPATH/./graql/snb-ontology-simple.gql
+REMOTE_PATH=`cat params.ini | grep grakn.engine.uri | sed "s/grakn.engine.uri://"`
+$GRAKN_HOME/bin/graql.sh -k SNB -f $SCRIPTPATH/./graql/snb-ontology-simple.gql -r $REMOTE_PATH
 
 # generate params.ini file that uses Grakn serializers
 cat $LDBC_SNB_DATAGEN_HOME/params.ini | sed 's/small.CSV/grakn.Grakn/' > $TEMP_PARAM_FILE

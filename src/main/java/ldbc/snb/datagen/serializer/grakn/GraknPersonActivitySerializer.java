@@ -1,8 +1,6 @@
 package ldbc.snb.datagen.serializer.grakn;
 
 import ai.grakn.Grakn;
-import ai.grakn.graql.InsertQuery;
-import ai.grakn.graql.MatchQuery;
 import ai.grakn.graql.Var;
 import ldbc.snb.datagen.objects.Comment;
 import ldbc.snb.datagen.objects.Forum;
@@ -18,7 +16,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 
-import static ai.grakn.graql.Graql.insert;
 import static ai.grakn.graql.Graql.match;
 import static ai.grakn.graql.Graql.var;
 
@@ -27,7 +24,6 @@ import static ai.grakn.graql.Graql.var;
  */
 public class GraknPersonActivitySerializer extends PersonActivitySerializer {
 
-    String engineURI = Grakn.DEFAULT_URI;
     GraqlVarLoader loader;
 
     @Override
