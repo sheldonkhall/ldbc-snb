@@ -1,5 +1,4 @@
 #!/bin/bash
-GRAKN_HOME=/opt/grakn/grakn-dist-0.11.0-SNAPSHOT
 
 # set script directory as working directory
 SCRIPTPATH=`cd "$(dirname "$0")" && pwd -P`
@@ -18,11 +17,10 @@ TEMP_PARAM_FILE=/tmp/graknParams.ini
 
 export HADOOP_HOME
 export LDBC_SNB_DATAGEN_HOME
-export GRAKN_HOME
 
 # load the ontology to the SNB keyspace
 REMOTE_PATH=`cat params.ini | grep grakn.engine.uri | sed "s/grakn.engine.uri://"`
-$GRAKN_HOME/bin/graql.sh -k SNB -f $SCRIPTPATH/./graql/snb-ontology-simple.gql -r $REMOTE_PATH
+graql.sh -k SNB -f $SCRIPTPATH/./graql/snb-ontology-simple.gql -r $REMOTE_PATH
 
 # generate params.ini file that uses Grakn serializers
 cat $LDBC_SNB_DATAGEN_HOME/params.ini | sed 's/small.CSV/grakn.Grakn/' > $TEMP_PARAM_FILE

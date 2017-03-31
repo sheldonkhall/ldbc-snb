@@ -32,7 +32,7 @@ In order to run the SNB generator you need these pre-requisites:
 * 7zip,
 * Grakn,
 
-and the `GRAKN_HOME` environmental variable should be set in the `runGrakn*.sh` scripts so that it points to your Grakn distribution.
+and the `PATH` environmental variable should contain the `bin` directory of your Grakn distribution.
 Finally, start the Grakn engine and the SNB data for the small graph can be loaded by executing either of the Grakn loading scripts:
 
 `./runGraknREST.sh`
