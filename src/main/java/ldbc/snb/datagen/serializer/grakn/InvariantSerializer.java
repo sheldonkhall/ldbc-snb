@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.Objects;
 
+import static ai.grakn.GraknTxType.WRITE;
 import static ai.grakn.graql.Graql.var;
 import static ldbc.snb.datagen.serializer.grakn.Utility.flush;
 
@@ -25,7 +26,7 @@ public class InvariantSerializer extends ldbc.snb.datagen.serializer.InvariantSe
 
     @Override
     public void initialize(Configuration conf, int reducerId) {
-        graph = Grakn.factory(Grakn.DEFAULT_URI, Objects.requireNonNull(conf.get("grakn.engine.keyspace"))).getGraph();
+        graph = Grakn.session(Grakn.DEFAULT_URI, Objects.requireNonNull(conf.get("grakn.engine.keyspace"))).open(WRITE);
     }
 
     @Override
