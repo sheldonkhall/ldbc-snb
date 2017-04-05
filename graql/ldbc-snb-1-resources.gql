@@ -37,7 +37,6 @@ insert
 "birth-day" sub Date;
 "email" sub String;
 "speaks" sub String;
-"browser-user" sub String;
 "place-id" sub ID;
 "language" sub String;
 "image-file" sub String;

@@ -71,7 +71,7 @@ insert
 	has-resource birth-day
 	has-resource email
 	has-resource speaks
-	has-resource browser-user
+	has-resource browser-used
 	has-resource location-ip
 	has-resource creation-date
 	plays-role creator
