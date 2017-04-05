@@ -1,4 +1,4 @@
 match
-  $post isa comment, has snb-id <Message.id>;
-  $comment isa comment, has snb-id <Comment.id>;
-insert (reply-owner: $post, reply-content: $comment) isa reply;
+  $post isa comment, has message-id <Message.id>;
+  $comment isa comment, has message-id <Comment.id>;
+insert (original: $post, reply: $comment) isa reply-of;

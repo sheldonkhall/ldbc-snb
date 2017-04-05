@@ -1,5 +1,5 @@
 #!/bin/bash
-GRAKN_HOME=/opt/grakn/grakn-dist-0.11.0-SNAPSHOT
+GRAKN_HOME=/opt/grakn/grakn-dist-0.12.0-SNAPSHOT
 
 # set script directory as working directory
 SCRIPTPATH=`cd "$(dirname "$0")" && pwd -P`
@@ -10,7 +10,9 @@ GRAQL=$SCRIPTPATH/./graql
 $SCRIPTPATH/run.sh
 
 # load ontology
-$GRAKN_HOME/bin/graql.sh -k $2 -f $GRAQL/snb-ontology-simple.gql -r $1
+$GRAKN_HOME/bin/graql.sh -k $2 -f $GRAQL/ldbc-snb-1-resources.gql -r $1
+$GRAKN_HOME/bin/graql.sh -k $2 -f $GRAQL/ldbc-snb-2-relations.gql -r $1
+$GRAKN_HOME/bin/graql.sh -k $2 -f $GRAQL/ldbc-snb-3-entities.gql -r $1
 
 # load data
 time $GRAKN_HOME/bin/migration.sh csv -s \| -t $GRAQL/template-user.gql -i $DATA/user_0_0.csv -k $2 -u $1
