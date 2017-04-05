@@ -1,4 +1,4 @@
 match
-  $user1 isa person, has snb-id <User1.id>;
-  $user2 isa person, has snb-id <User.id>;
-insert (acquaintance1: $user1, acquaintance2: $user2) isa knows;
+  $user1 isa person, has person-id <User1.id>;
+  $user2 isa person, has person-id <User.id>;
+insert (contact-1: $user1, contact-2: $user2) isa knows;

@@ -1,0 +1,85 @@
+# The entities defined in the ldbc-snb benchmark
+insert
+
+# geographic entities
+"place" sub entity
+	has-resource place-id
+	has-resource name
+	plays-role region;
+"city" sub place
+	plays-role part;
+"country" sub place
+	plays-role whole
+	plays-role part;
+"continent" sub place
+	plays-role whole;
+
+# message board entities
+"forum" sub entity
+	has-resource forum-id
+	has-resource title
+	has-resource creation-date
+	plays-role container
+	plays-role moderated
+	plays-role tagged;
+"message" sub entity
+	is-abstract
+	has-resource message-id
+	has-resource browser-used
+	has-resource creation-date
+	has-resource location-ip
+	has-resource content
+	has-resource length
+	plays-role product
+	plays-role tagged
+	plays-role located
+	plays-role like
+	plays-role original;
+"comment" sub message
+	plays-role reply;
+"post" sub message
+	has-resource language
+	has-resource image-file
+	plays-role contained;
+"tag" sub entity
+	has-resource tag-id
+	has-resource name
+	plays-role interest
+	plays-role label
+	plays-role instance;
+"tag-class" sub entity
+	has-resource tag-class-id
+	has-resource name
+	plays-role class
+	plays-role subclass;
+
+# institutional entities
+"organization" sub entity
+	has-resource organization-id
+	has-resource name
+	plays-role located
+	plays-role institution;
+"company" sub organization;
+"university" sub organization;
+
+# individuals
+"person" sub entity
+	has-resource person-id
+	has-resource first-name
+	has-resource last-name
+	has-resource gender
+	has-resource birth-day
+	has-resource email
+	has-resource speaks
+	has-resource browser-user
+	has-resource location-ip
+	has-resource creation-date
+	plays-role creator
+	plays-role interested
+	plays-role member
+	plays-role moderator
+	plays-role located
+	plays-role contact-1
+	plays-role contact-2
+	plays-role admirer
+	plays-role individual;

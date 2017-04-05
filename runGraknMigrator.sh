@@ -9,7 +9,9 @@ GRAQL=$SCRIPTPATH/./graql
 $SCRIPTPATH/run.sh
 
 # load ontology
-graql.sh -k $2 -f $GRAQL/snb-ontology-simple.gql -r $1
+$GRAKN_HOME/bin/graql.sh -k $2 -f $GRAQL/ldbc-snb-1-resources.gql -r $1
+$GRAKN_HOME/bin/graql.sh -k $2 -f $GRAQL/ldbc-snb-2-relations.gql -r $1
+$GRAKN_HOME/bin/graql.sh -k $2 -f $GRAQL/ldbc-snb-3-entities.gql -r $1
 
 # load data
 time migration.sh csv -s \| -t $GRAQL/template-user.gql -i $DATA/user_0_0.csv -k $2 -u $1

@@ -1,1 +1,1 @@
-insert $x isa person, has snb-id <id>, has first-name <nickname>;
+insert $x isa person, has person-id <id>, has first-name <nickname>;
