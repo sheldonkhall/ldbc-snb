@@ -19,7 +19,9 @@ export HADOOP_HOME
 export LDBC_SNB_DATAGEN_HOME
 
 # load the ontology to the SNB keyspace
-graql.sh -k SNB -f $SCRIPTPATH/./graql/snb-ontology-simple.gql
+graql.sh -k SNB -f $SCRIPTPATH/./graql/ldbc-snb-1-resources.gql
+graql.sh -k SNB -f $SCRIPTPATH/./graql/ldbc-snb-2-relations.gql
+graql.sh -k SNB -f $SCRIPTPATH/./graql/ldbc-snb-3-entities.gql
 
 # generate params.ini file that uses Grakn serializers
 cat $LDBC_SNB_DATAGEN_HOME/params.ini | sed 's/small.CSV/grakn./' > $TEMP_PARAM_FILE
