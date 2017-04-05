@@ -1,1 +1,53 @@
 # The entities defined in the ldbc-snb benchmark
+insert
+
+# geographic entities
+"place" sub entity
+	has-resource place-id
+	has-resource name;
+"city" sub place;
+"country" sub place;
+
+# message board entities
+"forum" sub entity
+	has-resource forum-id
+	has-resource title
+	has-resource creation-date;
+"message" sub entity
+	is-abstract
+	has-resource message-id
+	has-resource browser-used
+	has-resource creation-date
+	has-resource location-ip
+	has-resource content
+	has-resource length;
+"comment" sub message;
+"post" sub message
+	has-resource language
+	has-resource image-file;
+"tag" sub entity
+	has-resource tag-id
+	has-resource name;
+"tag-class" sub entity
+	has-resource tag-class-id
+	has-resource name;	
+
+# institutional entities
+"organization" sub entity
+	has-resource organization-id
+	has-resource name;
+"company" sub organization;
+"university" sub organization;
+
+"person" sub entity
+	has-resource person-id
+	has-resource first-name
+	has-resource last-name
+	has-resource gender
+	has-resource birth-day
+	has-resource email
+	has-resource speaks
+	has-resource browser-user
+	has-resource location-ip
+	has-resource creation-date;
+

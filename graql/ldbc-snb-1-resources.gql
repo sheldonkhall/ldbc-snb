@@ -1,4 +1,5 @@
 # The resources as defined in the ldbc-snb benchmark
+insert
 
 # this is a proxy for the ID datatype that is unique per entity type
 "ID" sub resource is-abstract datatype long;
@@ -24,7 +25,7 @@
 "creation-date" sub DateTime;
 "message-id" sub ID;
 "browser-used" sub String;
-"locationIP" sub String;
+"location-ip" sub String;
 "content" sub Text;
 "length" sub integer-32;
 "organization-id" sub ID;
