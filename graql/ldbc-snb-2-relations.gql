@@ -1,1 +1,89 @@
 # The relationships defined in the ldbc-snb benchmark
+insert
+
+"contained" sub role;
+"container" sub role;
+"container-of" sub relation
+	has-role contained
+	has-role container;
+
+"creator" sub role;
+"product" sub role;
+"has-creator" sub relation
+	has-role creator
+	has-role product;
+
+"interest" sub role;
+"interested" sub role;
+"has-interest" sub relation
+	has-role interest
+	has-role interested;
+
+"member" sub role;
+"has-member" sub relation
+	has-role member
+	has-role container;
+
+"moderator" sub role;
+"moderated" sub role;
+"has-moderator" sub relation
+	has-role moderator
+	has-role moderated;
+
+"tagged" sub role;
+"label" sub role;
+"has-tag" sub relation
+	has-role tagged
+	has-role label;
+
+"class" sub role;
+"instance" sub role;
+"has-type" sub relation
+	has-role class
+	has-role instance;
+
+"part" sub contained;
+"whole" sub container;
+"is-part-of" sub container-of
+	has-role part
+	has-role whole;
+
+"located" sub part;
+"region" sub whole;
+"is-located-in" sub is-part-of
+	has-role located
+	has-role region;
+
+"subclass" sub role;
+"is-subclass-of" sub relation
+	has-role subclass
+	has-role class;
+
+"contact" sub role is-abstract;
+"contact-1" sub contact;
+"contact-2" sub contact;
+"knows" sub relation
+	has-role contact-1
+	has-role contact-2;
+
+"like" sub role;
+"admirer" sub role;
+"likes" sub relation
+	has-role like
+	has-role admirer;
+
+"reply" sub role;
+"original" sub role;
+"reply-of" sub relation
+	has-role reply
+	has-role original;
+
+"institution" sub role;
+"individual" sub role;
+"study-at" sub relation
+	has-role institution
+	has-role individual;
+
+"work-at" sub relation
+	has-role institution
+	has-role individual;
