@@ -1,4 +1,4 @@
 match
-  $message isa comment, has message-id <Message.id>;
-  $tag isa tag, has tag-id <Tag.id>;
+  $message isa comment, has message-id @long(<Message.id>);
+  $tag isa tag, has tag-id @long(<Tag.id>);
 insert (label: $tag, tagged: $message) isa has-tag;
