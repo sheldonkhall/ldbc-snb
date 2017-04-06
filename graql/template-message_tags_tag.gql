@@ -1,4 +1,4 @@
 match
-  $message isa comment, has snb-id <Message.id>;
-  $tag isa tag, has snb-id <Tag.id>;
-insert (subject-tag: $tag, tagged-subject: $message) isa tagging;
+  $message isa comment, has message-id @long(<Message.id>);
+  $tag isa tag, has tag-id @long(<Tag.id>);
+insert (label: $tag, tagged: $message) isa has-tag;

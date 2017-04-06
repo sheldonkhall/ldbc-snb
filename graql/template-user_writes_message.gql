@@ -1,4 +1,4 @@
 match
-  $message isa comment, has snb-id <Message.id>;
-  $person isa person, has snb-id <User.id>;
-insert (writer: $person, written: $message) isa writes;
+  $message isa comment, has message-id @long(<Message.id>);
+  $person isa person, has person-id @long(<User.id>);
+insert (creator: $person, product: $message) isa has-creator;

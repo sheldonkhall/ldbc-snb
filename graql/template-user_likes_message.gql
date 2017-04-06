@@ -1,4 +1,4 @@
 match
-  $message isa comment, has snb-id <Message.id>;
-  $person isa person, has snb-id <User.id>;
-insert (liker: $person, liked: $message) isa likes;
+  $message isa comment, has message-id @long(<Message.id>);
+  $person isa person, has person-id @long(<User.id>);
+insert (admirer: $person, like: $message) isa likes;

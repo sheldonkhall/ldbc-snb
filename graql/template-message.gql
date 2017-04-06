@@ -1,1 +1,1 @@
-insert $x isa comment, has content <body>, has snb-id <id>, has creation-date <date>;
+insert $x isa comment, has content <body>, has message-id @long(<id>), has creation-date <date>;
