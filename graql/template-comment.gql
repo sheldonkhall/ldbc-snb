@@ -1,0 +1,7 @@
+insert $x isa comment
+	has message-id @long(<id>)
+	has creation-date <creationDate>
+	has location-ip <locationIP>
+	has browser-used <browserUsed>
+	has content <content>
+	has length @long(<length>);
