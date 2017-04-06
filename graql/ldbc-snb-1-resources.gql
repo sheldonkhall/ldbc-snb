@@ -42,3 +42,7 @@ insert
 "image-file" sub String;
 "tag-id" sub ID;
 "tag-class-id" sub ID;
+"url" sub Text;
+"join-date" sub Date;
+"class-year" sub integer-32;
+"work-from" sub integer-32;

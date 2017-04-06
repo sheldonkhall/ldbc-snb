@@ -21,6 +21,7 @@ insert
 
 "member" sub role;
 "has-member" sub relation
+	has-resource join-date
 	has-role member
 	has-role container;
 
@@ -63,12 +64,14 @@ insert
 "contact-1" sub contact;
 "contact-2" sub contact;
 "knows" sub relation
+	has-resource creation-date
 	has-role contact-1
 	has-role contact-2;
 
 "like" sub role;
 "admirer" sub role;
 "likes" sub relation
+	has-resource creation-date
 	has-role like
 	has-role admirer;
 
@@ -81,9 +84,11 @@ insert
 "institution" sub role;
 "individual" sub role;
 "study-at" sub relation
+	has-resource class-year
 	has-role institution
 	has-role individual;
 
 "work-at" sub relation
+	has-resource work-from
 	has-role institution
 	has-role individual;
