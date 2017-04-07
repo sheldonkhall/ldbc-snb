@@ -3,87 +3,100 @@ insert
 
 # geographic entities
 "place" sub entity
-	has-resource place-id
-	has-resource name
-	has-resource url
-	plays-role region;
+	key place-id
+	has name
+	has url
+	plays region;
+
 "city" sub place
-	plays-role part;
+	plays part;
+
 "country" sub place
-	plays-role whole
-	plays-role part;
+	plays whole
+	plays part;
+
 "continent" sub place
-	plays-role whole;
+	plays whole;
 
 # message board entities
 "forum" sub entity
-	has-resource forum-id
-	has-resource title
-	has-resource creation-date
-	plays-role container
-	plays-role moderated
-	plays-role tagged;
+	key forum-id
+	has title
+	has creation-date
+	plays container
+	plays group
+	plays moderated
+	plays tagged;
+
 "message" sub entity
 	is-abstract
-	has-resource message-id
-	has-resource browser-used
-	has-resource creation-date
-	has-resource location-ip
-	has-resource content
-	has-resource length
-	plays-role product
-	plays-role tagged
-	plays-role located
-	plays-role like
-	plays-role original;
+	key message-id
+	has browser-used
+	has creation-date
+	has location-ip
+	has content
+	has length
+	plays product
+	plays tagged
+	plays located
+	plays like
+	plays original;
+
 "comment" sub message
-	plays-role reply;
+	plays reply;
+
 "post" sub message
-	has-resource language
-	has-resource image-file
-	plays-role contained;
+	has language
+	has image-file
+	plays contained;
+
 "tag" sub entity
-	has-resource tag-id
-	has-resource name
-	has-resource url
-	plays-role interest
-	plays-role label
-	plays-role instance;
+	key tag-id
+	has name
+	has url
+	plays interest
+	plays topic
+	plays instance;
+
 "tag-class" sub entity
-	has-resource tag-class-id
-	has-resource name
-	has-resource url
-	plays-role class
-	plays-role subclass;
+	key tag-class-id
+	has name
+	has url
+	plays class
+	plays subclass
+	plays superclass;
 
 # institutional entities
-"organization" sub entity
-	has-resource organization-id
-	has-resource name
-	has-resource url
-	plays-role located
-	plays-role institution;
-"company" sub organization;
-"university" sub organization;
+"organisation" sub entity
+	key organisation-id
+	has name
+	has url
+	plays located;
+
+"company" sub organisation
+	plays employer;
+
+"university" sub organisation
+	plays school;
 
 # individuals
 "person" sub entity
-	has-resource person-id
-	has-resource first-name
-	has-resource last-name
-	has-resource gender
-	has-resource birth-day
-	has-resource email
-	has-resource speaks
-	has-resource browser-used
-	has-resource location-ip
-	has-resource creation-date
-	plays-role creator
-	plays-role interested
-	plays-role member
-	plays-role moderator
-	plays-role located
-	plays-role contact-1
-	plays-role contact-2
-	plays-role admirer
-	plays-role individual;
+	key person-id
+	has first-name
+	has last-name
+	has gender
+	has birth-day
+	has email
+	has speaks
+	has browser-used
+	has location-ip
+	has creation-date
+	plays creator
+	plays interested
+	plays member
+	plays moderator
+	plays located
+	plays friend
+	plays admirer
+	plays employee
+	plays student;

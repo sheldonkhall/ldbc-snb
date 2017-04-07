@@ -4,91 +4,92 @@ insert
 "contained" sub role;
 "container" sub role;
 "container-of" sub relation
-	has-role contained
-	has-role container;
+	relates contained
+	relates container;
 
 "creator" sub role;
 "product" sub role;
 "has-creator" sub relation
-	has-role creator
-	has-role product;
+	relates creator
+	relates product;
 
 "interest" sub role;
 "interested" sub role;
 "has-interest" sub relation
-	has-role interest
-	has-role interested;
+	relates interest
+	relates interested;
 
 "member" sub role;
+"group" sub role;
 "has-member" sub relation
-	has-resource join-date
-	has-role member
-	has-role container;
+	has join-date
+	relates member
+	relates group;
 
 "moderator" sub role;
 "moderated" sub role;
 "has-moderator" sub relation
-	has-role moderator
-	has-role moderated;
+	relates moderator
+	relates moderated;
 
 "tagged" sub role;
-"label" sub role;
+"topic" sub role;
 "has-tag" sub relation
-	has-role tagged
-	has-role label;
+	relates tagged
+	relates topic;
 
 "class" sub role;
 "instance" sub role;
 "has-type" sub relation
-	has-role class
-	has-role instance;
+	relates class
+	relates instance;
 
-"part" sub contained;
-"whole" sub container;
-"is-part-of" sub container-of
-	has-role part
-	has-role whole;
+"part" sub role;
+"whole" sub role;
+"is-part-of" sub relation
+	relates part
+	relates whole;
 
-"located" sub part;
-"region" sub whole;
-"is-located-in" sub is-part-of
-	has-role located
-	has-role region;
+"located" sub role;
+"region" sub role;
+"is-located-in" sub relation
+	relates located
+	relates region;
 
 "subclass" sub role;
+"superclass" sub role;
 "is-subclass-of" sub relation
-	has-role subclass
-	has-role class;
+	relates subclass
+	relates superclass;
 
-"contact" sub role is-abstract;
-"contact-1" sub contact;
-"contact-2" sub contact;
+"friend" sub role;
 "knows" sub relation
-	has-resource creation-date
-	has-role contact-1
-	has-role contact-2;
+	has creation-date
+	relates friend;
 
 "like" sub role;
 "admirer" sub role;
 "likes" sub relation
-	has-resource creation-date
-	has-role like
-	has-role admirer;
+	has creation-date
+	relates like
+	relates admirer;
 
 "reply" sub role;
 "original" sub role;
 "reply-of" sub relation
-	has-role reply
-	has-role original;
+	relates reply
+	relates original;
 
-"institution" sub role;
-"individual" sub role;
+"school" sub role;
+"student" sub role;
 "study-at" sub relation
-	has-resource class-year
-	has-role institution
-	has-role individual;
+	has class-year
+	relates school
+	relates student;
 
+"employee" sub role;
+"employer" sub role;
 "work-at" sub relation
-	has-resource work-from
-	has-role institution
-	has-role individual;
+	has work-from
+	relates employer,
+	relates employee;	

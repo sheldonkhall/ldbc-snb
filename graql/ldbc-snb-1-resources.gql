@@ -28,7 +28,7 @@ insert
 "location-ip" sub String;
 "content" sub Text;
 "length" sub integer-32;
-"organization-id" sub ID;
+"organisation-id" sub ID;
 "name" sub String;
 "person-id" sub ID;
 "first-name" sub String;
