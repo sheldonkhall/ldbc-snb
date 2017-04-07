@@ -44,17 +44,17 @@ insert
 	has-role class
 	has-role instance;
 
-"part" sub contained;
-"whole" sub container;
+"part" sub role;
+"whole" sub role;
 "is-part-of" sub relation
 	has-role part
 	has-role whole;
 
-"located" sub part;
-"locating" sub whole;
+"located" sub role;
+"region" sub role;
 "is-located-in" sub relation
 	has-role located
-	has-role locating;
+	has-role region;
 
 "subclass" sub role;
 "superclass" sub role;
