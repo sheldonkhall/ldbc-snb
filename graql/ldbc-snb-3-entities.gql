@@ -6,27 +6,27 @@ insert
 	has-key place-id
 	has-resource name
 	has-resource url
-	plays-role region;
+	plays region;
 
 "city" sub place
-	plays-role part;
+	plays part;
 
 "country" sub place
-	plays-role whole
-	plays-role part;
+	plays whole
+	plays part;
 
 "continent" sub place
-	plays-role whole;
+	plays whole;
 
 # message board entities
 "forum" sub entity
 	has-key forum-id
 	has-resource title
 	has-resource creation-date
-	plays-role container
-	plays-role group
-	plays-role moderated
-	plays-role tagged;
+	plays container
+	plays group
+	plays moderated
+	plays tagged;
 
 "message" sub entity
 	is-abstract
@@ -36,48 +36,48 @@ insert
 	has-resource location-ip
 	has-resource content
 	has-resource length
-	plays-role product
-	plays-role tagged
-	plays-role located
-	plays-role like
-	plays-role original;
+	plays product
+	plays tagged
+	plays located
+	plays like
+	plays original;
 
 "comment" sub message
-	plays-role reply;
+	plays reply;
 
 "post" sub message
 	has-resource language
 	has-resource image-file
-	plays-role contained;
+	plays contained;
 
 "tag" sub entity
 	has-key tag-id
 	has-resource name
 	has-resource url
-	plays-role interest
-	plays-role label
-	plays-role instance;
+	plays interest
+	plays topic
+	plays instance;
 
 "tag-class" sub entity
 	has-key tag-class-id
 	has-resource name
 	has-resource url
-	plays-role class
-	plays-role subclass
-	plays-role superclass;
+	plays class
+	plays subclass
+	plays superclass;
 
 # institutional entities
 "organisation" sub entity
 	has-key organisation-id
 	has-resource name
 	has-resource url
-	plays-role located;
+	plays located;
 
 "company" sub organisation
-	plays-role employer;
+	plays employer;
 
 "university" sub organisation
-	plays-role school;
+	plays school;
 
 # individuals
 "person" sub entity
@@ -91,12 +91,12 @@ insert
 	has-resource browser-used
 	has-resource location-ip
 	has-resource creation-date
-	plays-role creator
-	plays-role interested
-	plays-role member
-	plays-role moderator
-	plays-role located
-	plays-role friend
-	plays-role admirer
-	plays-role employer
-	plays-role student;
+	plays creator
+	plays interested
+	plays member
+	plays moderator
+	plays located
+	plays friend
+	plays admirer
+	plays employer
+	plays student;
