@@ -3,9 +3,9 @@ insert
 
 # geographic entities
 "place" sub entity
-	has-key place-id
-	has-resource name
-	has-resource url
+	key place-id
+	has name
+	has url
 	plays region;
 
 "city" sub place
@@ -20,9 +20,9 @@ insert
 
 # message board entities
 "forum" sub entity
-	has-key forum-id
-	has-resource title
-	has-resource creation-date
+	key forum-id
+	has title
+	has creation-date
 	plays container
 	plays group
 	plays moderated
@@ -30,12 +30,12 @@ insert
 
 "message" sub entity
 	is-abstract
-	has-key message-id
-	has-resource browser-used
-	has-resource creation-date
-	has-resource location-ip
-	has-resource content
-	has-resource length
+	key message-id
+	has browser-used
+	has creation-date
+	has location-ip
+	has content
+	has length
 	plays product
 	plays tagged
 	plays located
@@ -46,31 +46,31 @@ insert
 	plays reply;
 
 "post" sub message
-	has-resource language
-	has-resource image-file
+	has language
+	has image-file
 	plays contained;
 
 "tag" sub entity
-	has-key tag-id
-	has-resource name
-	has-resource url
+	key tag-id
+	has name
+	has url
 	plays interest
 	plays topic
 	plays instance;
 
 "tag-class" sub entity
-	has-key tag-class-id
-	has-resource name
-	has-resource url
+	key tag-class-id
+	has name
+	has url
 	plays class
 	plays subclass
 	plays superclass;
 
 # institutional entities
 "organisation" sub entity
-	has-key organisation-id
-	has-resource name
-	has-resource url
+	key organisation-id
+	has name
+	has url
 	plays located;
 
 "company" sub organisation
@@ -81,16 +81,16 @@ insert
 
 # individuals
 "person" sub entity
-	has-key person-id
-	has-resource first-name
-	has-resource last-name
-	has-resource gender
-	has-resource birth-day
-	has-resource email
-	has-resource speaks
-	has-resource browser-used
-	has-resource location-ip
-	has-resource creation-date
+	key person-id
+	has first-name
+	has last-name
+	has gender
+	has birth-day
+	has email
+	has speaks
+	has browser-used
+	has location-ip
+	has creation-date
 	plays creator
 	plays interested
 	plays member
