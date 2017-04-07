@@ -23,7 +23,7 @@ tail -n +2 $DATA/comment_0_0.csv | wc -l
 time migration.sh csv -s \| -t $GRAQL/template-forum.gql -i $DATA/forum_0_0.csv -k $2 -u $1 -a ${3:-25} -b ${4:-25}
 tail -n +2 $DATA/forum_0_0.csv | wc -l
 
-time migration.sh csv -s \| -t $GRAQL/template-organization.gql -i $DATA/organisation_0_0.csv -k $2 -u $1 -a ${3:-25} -b ${4:-25}
+time migration.sh csv -s \| -t $GRAQL/template-organisation.gql -i $DATA/organisation_0_0.csv -k $2 -u $1 -a ${3:-25} -b ${4:-25}
 tail -n +2 $DATA/organisation_0_0.csv | wc -l
 
 time migration.sh csv -s \| -t $GRAQL/template-place.gql -i $DATA/place_0_0.csv -k $2 -u $1 -a ${3:-25} -b ${4:-25}
@@ -64,7 +64,7 @@ tail -n +2 $DATA/forum_hasModerator_person_0_0.csv | wc -l
 time migration.sh csv -s \| -t $GRAQL/template-forum_hasTag_tag.gql -i $DATA/forum_hasTag_tag_0_0.csv -k $2 -u $1 -a ${3:-25} -b ${4:-25}
 tail -n +2 $DATA/forum_hasTag_tag_0_0.csv | wc -l
 
-time migration.sh csv -s \| -t $GRAQL/template-organization_isLocatedIn_place.gql -i $DATA/organisation_isLocatedIn_place_0_0.csv -k $2 -u $1 -a ${3:-25} -b ${4:-25}
+time migration.sh csv -s \| -t $GRAQL/template-organisation_isLocatedIn_place.gql -i $DATA/organisation_isLocatedIn_place_0_0.csv -k $2 -u $1 -a ${3:-25} -b ${4:-25}
 tail -n +2 $DATA/organisation_isLocatedIn_place_0_0.csv | wc -l
 
 time migration.sh csv -s \| -t $GRAQL/template-person_email_emailaddress.gql -i $DATA/person_email_emailaddress_0_0.csv -k $2 -u $1 -a ${3:-25} -b ${4:-25}
