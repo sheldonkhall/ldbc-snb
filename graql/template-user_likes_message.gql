@@ -1,4 +1,0 @@
-match
-  $message isa comment, has message-id @long(<Message.id>);
-  $person isa person, has person-id @long(<User.id>);
-insert (admirer: $person, like: $message) isa likes;

@@ -1,4 +1,0 @@
-match
-  $user1 isa person, has person-id @long(<User1.id>);
-  $user2 isa person, has person-id @long(<User.id>);
-insert (contact-1: $user1, contact-2: $user2) isa knows;
