@@ -7,6 +7,7 @@ insert
 	has-resource name
 	has-resource url
 	plays-role region;
+
 "city" sub place
 	plays-role part;
 
@@ -19,7 +20,7 @@ insert
 
 # message board entities
 "forum" sub entity
-	has-resource forum-id
+	has-key forum-id
 	has-resource title
 	has-resource creation-date
 	plays-role container
@@ -40,6 +41,7 @@ insert
 	plays-role located
 	plays-role like
 	plays-role original;
+
 "comment" sub message
 	plays-role reply;
 
@@ -79,7 +81,7 @@ insert
 
 # individuals
 "person" sub entity
-	has-resource person-id
+	has-key person-id
 	has-resource first-name
 	has-resource last-name
 	has-resource gender

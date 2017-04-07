@@ -1,4 +1,4 @@
 insert $x isa <type>
-	has organization-id @long(<id>)
+	has organisation-id @long(<id>)
 	has name <name>
 	has url <url>;
