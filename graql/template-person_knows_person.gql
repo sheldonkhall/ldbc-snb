@@ -3,4 +3,4 @@ match
 	$person1 isa person, has person-id @long(<Person1.id>);
 insert
 	(friend: $person, friend: $person1) isa knows
-	has creation-date <creationDate>;
+	has creation-date @long(@date(<creationDate>,"yyyy-MM-dd'T'HH:mm:ss.SSSZ"));

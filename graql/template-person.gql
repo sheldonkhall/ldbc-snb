@@ -3,7 +3,7 @@ insert $x isa person
 	has first-name <firstName>
 	has last-name <lastName>
 	has gender <gender>
-	has birth-day <birthday>
-	has creation-date <creationDate>
+	has birth-day @long(@date(<birthday>,"yyyy-MM-dd"))
+	has creation-date @long(@date(<creationDate>,"yyyy-MM-dd'T'HH:mm:ss.SSSZ"))
 	has location-ip <locationIP>
 	has browser-used <browserUsed>;
