@@ -3,4 +3,4 @@ match
 	$comment isa comment, has message-id @long(<Comment.id>);
 insert
 	(admirer: $person, like: $comment) isa likes
-	has creation-date <creationDate>;
+	has creation-date @long(@date(<creationDate>,"yyyy-MM-dd'T'HH:mm:ss.SSSZ"));

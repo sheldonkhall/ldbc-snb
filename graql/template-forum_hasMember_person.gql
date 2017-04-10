@@ -3,4 +3,4 @@ match
 	$person isa person, has person-id @long(<Person.id>);
 insert
 	(group: $forum, member: $person) isa has-member
-	has join-date <joinDate>;
+	has join-date @long(@date(<joinDate>,"yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
