@@ -1,9 +1,9 @@
 insert $x isa post
 	has message-id @long(<id>)
-	has image-file <imageFile>
+	if (<imageFile> != "") do {has image-file <imageFile>}
 	has creation-date @long(@date(<creationDate>,"yyyy-MM-dd'T'HH:mm:ss.SSSZ"))
 	has location-ip <locationIP>
 	has browser-used <browserUsed>
 	has language <language>
-	has content <content>
+	if (<content> != "") do {has content <content>}
 	has length @long(<length>);
