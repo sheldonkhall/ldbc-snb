@@ -5,5 +5,5 @@ insert $x isa post
 	has location-ip <locationIP>
 	has browser-used <browserUsed>
 	has language <language>
-	has content <content>
+	if (<content> != "") do {has content <content>}
 	has length @long(<length>);
