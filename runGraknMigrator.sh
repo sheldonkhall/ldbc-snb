@@ -12,6 +12,8 @@ $SCRIPTPATH/run.sh
 graql.sh -k $2 -f $GRAQL/ldbc-snb-1-resources.gql -r $1
 graql.sh -k $2 -f $GRAQL/ldbc-snb-2-relations.gql -r $1
 graql.sh -k $2 -f $GRAQL/ldbc-snb-3-entities.gql -r $1
+graql.sh -k $2 -f $GRAQL/ldbc-snb-4-rules.gql -r $1
+
 
 # load entities
 time migration.sh csv -s \| -t $GRAQL/template-person.gql -i $DATA/person_0_0.csv -k $2 -u $1 -a ${3:-25} -b ${4:-25}
