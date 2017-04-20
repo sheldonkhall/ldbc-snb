@@ -12,6 +12,8 @@ $SCRIPTPATH/run.sh
 graql.sh -k $2 -f $GRAQL/ldbc-snb-1-resources.gql -r $1
 graql.sh -k $2 -f $GRAQL/ldbc-snb-2-relations.gql -r $1
 graql.sh -k $2 -f $GRAQL/ldbc-snb-3-entities.gql -r $1
+graql.sh -k $2 -f $GRAQL/ldbc-snb-4-rules.gql -r $1
+
 
 # load entities
 time migration.sh csv -s \| -t $GRAQL/template-person.gql -i $DATA/person_0_0.csv -k $2 -u $1 -a ${3:-25} -b ${4:-25}
@@ -45,7 +47,7 @@ tail -n +2 $DATA/comment_hasCreator_person_0_0.csv | wc -l
 time migration.sh csv -s \| -t $GRAQL/template-comment_isLocatedIn_place.gql -i $DATA/comment_isLocatedIn_place_0_0.csv -k $2 -u $1 -a ${3:-25} -b ${4:-25}
 tail -n +2 $DATA/comment_isLocatedIn_place_0_0.csv | wc -l
 
-sed -i '' "1s/Comment/Message/" $DATA/comment_replyOf_comment_0_0.csv
+sed -i '' "1s/|Comment/|Message/" $DATA/comment_replyOf_comment_0_0.csv
 time migration.sh csv -s \| -t $GRAQL/template-comment_replyOf_comment.gql -i $DATA/comment_replyOf_comment_0_0.csv -k $2 -u $1 -a ${3:-25} -b ${4:-25}
 tail -n +2 $DATA/comment_replyOf_comment_0_0.csv | wc -l
 
