@@ -4,6 +4,6 @@ insert $x isa post
 	has creation-date @long(@date(<creationDate>,"yyyy-MM-dd'T'HH:mm:ss.SSSZ"))
 	has location-ip <locationIP>
 	has browser-used <browserUsed>
-	has language <language>
+	if (<language> != "") do {has language <language>}
 	if (<content> != "") do {has content <content>}
 	has length @long(<length>);
