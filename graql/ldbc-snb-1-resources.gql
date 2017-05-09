@@ -6,6 +6,7 @@ insert
 
 # proxies for the character datatypes
 "String" sub resource is-abstract regex /^(.{1,40})$/ datatype string;
+"Long String" sub resource is-abstract regex /^(.{1,256})$/ datatype string;
 "Text" sub resource is-abstract regex /^(.{1,2000})$/ datatype string;
 
 # proxies for the date datatypes
@@ -32,7 +33,7 @@ insert
 "content" sub Text;
 "length" sub integer-32;
 "organisation-id" sub ID;
-"name" sub String;
+"name" sub "Long String";
 "person-id" sub ID;
 "first-name" sub String;
 "last-name" sub String;
