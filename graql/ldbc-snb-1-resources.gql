@@ -25,7 +25,7 @@ insert
 
 # resources
 "forum-id" sub ID;
-"title" sub String;
+"title" sub "Long String";
 "creation-date" sub DateTime;
 "message-id" sub ID;
 "browser-used" sub String;
@@ -39,7 +39,7 @@ insert
 "last-name" sub String;
 "gender" sub String;
 "birth-day" sub "Date";
-"email" sub String;
+"email" sub "Long String";
 "speaks" sub String;
 "place-id" sub ID;
 "language" sub String;
