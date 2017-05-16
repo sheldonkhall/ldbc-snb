@@ -1,7 +1,7 @@
 insert $x isa post
 	has message-id @long(<id>)
 	if (<imageFile> != "") do {has image-file <imageFile>}
-	has creation-date @long(@date(<creationDate>,"yyyy-MM-dd'T'HH:mm:ss.SSSZ"))
+	has creation-date @date(<creationDate>,"yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 	has location-ip <locationIP>
 	has browser-used <browserUsed>
 	if (<language> != "") do {has language <language>}
