@@ -1,35 +1,43 @@
 insert
 
 original-post sub relation
-  relates reply
-  relates original;
+  relates parent-message
+  relates child-message;
+parent-message sub role;
+child-message sub role;
+message plays child-message;
+post plays parent-message;
 
-post plays reply;
-comment plays contained;
+forum-member sub relation
+  relates member-message
+  relates group-forum;
+member-message sub role;
+group-forum sub role;
+forum plays group-forum;
+message plays member-message;
 
-$originalPostOfPosts isa inference-rule
+$rootPost isa inference-rule
 lhs {
   $p isa post;
 }
 rhs {
-  (reply: $p, original: $p) isa original-post;
+  (parent-message: $p, child-message: $p) isa original-post;
 };
 
-$originalPostOfComments isa inference-rule
+$childComments isa inference-rule
 lhs {
   (reply: $c, original: $m) isa reply-of;
-  (reply: $m, original: $op) isa original-post;
+  (child-message: $m, parent-message: $op) isa original-post;
 }
 rhs {
-  (reply: $c, original: $op) isa original-post;
+  (child-message: $c, parent-message: $op) isa original-post;
 };
 
 $forumOfComments isa inference-rule
 lhs {
-  $m isa comment;
-  (reply: $m, original: $op) isa original-post;
+  (child-message: $m, parent-message: $op) isa original-post;
   (contained: $op, container: $forum) isa container-of;
 }
 rhs {
-  (contained: $m, container: $forum) isa container-of;
+  (member-message: $m, group-forum: $forum) isa forum-member;
 };
