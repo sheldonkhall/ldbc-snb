@@ -2,7 +2,7 @@ package ldbc.snb.datagen.serializer.grakn;
 
 import ai.grakn.GraknGraph;
 import ai.grakn.graql.QueryBuilder;
-import ai.grakn.graql.Var;
+import ai.grakn.graql.VarPattern;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
@@ -42,7 +42,7 @@ class Utility {
         } while (hasFailed);
     }
 
-    static void flush(GraknGraph graph, BiConsumer<QueryBuilder, List<Var>> varConsumer, List<Var> varList) {
+    static void flush(GraknGraph graph, BiConsumer<QueryBuilder, List<VarPattern>> varConsumer, List<VarPattern> varList) {
         boolean hasFailed;
         int numberOfFailures = 0;
         do {
@@ -70,7 +70,7 @@ class Utility {
         } while (hasFailed);
     }
 
-    static void putEntity(QueryBuilder queryBuilder, List<Var> varList) {
+    static void putEntity(QueryBuilder queryBuilder, List<VarPattern> varList) {
 //        LOGGER.info("Put entity ... ");
         if (!queryBuilder.match(varList.get(0)).ask().execute()) {
             queryBuilder.insert(varList.get(0)).execute();
@@ -80,7 +80,7 @@ class Utility {
 //        }
     }
 
-    static void putRelation(QueryBuilder queryBuilder, List<Var> varList) {
+    static void putRelation(QueryBuilder queryBuilder, List<VarPattern> varList) {
 //        LOGGER.info("Put relation ... ");
         queryBuilder.match(varList.subList(1, varList.size())).insert(varList.get(0)).execute();
     }

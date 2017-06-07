@@ -16,9 +16,9 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 import static ai.grakn.util.REST.Request.KEYSPACE_PARAM;
-import static ai.grakn.util.REST.Request.TASK_LOADER_INSERTS;
 import static ai.grakn.util.REST.Request.TASK_CLASS_NAME_PARAMETER;
 import static ai.grakn.util.REST.Request.TASK_CREATOR_PARAMETER;
+import static ai.grakn.util.REST.Request.TASK_LOADER_MUTATIONS;
 import static ai.grakn.util.REST.Request.TASK_RUN_AT_PARAMETER;
 
 /**
@@ -118,7 +118,7 @@ public class GraqlVarLoaderRESTImpl implements GraqlVarLoader {
     private String getConfiguration(Collection<InsertQuery> queries){
         return Json.object()
                 .set(KEYSPACE_PARAM, keyspace)
-                .set(TASK_LOADER_INSERTS, queries.stream().map(InsertQuery::toString).collect(Collectors.toList()))
+                .set(TASK_LOADER_MUTATIONS, queries.stream().map(InsertQuery::toString).collect(Collectors.toList()))
                 .toString();
     }
 

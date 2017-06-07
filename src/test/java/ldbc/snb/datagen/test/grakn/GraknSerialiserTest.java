@@ -1,8 +1,6 @@
 package ldbc.snb.datagen.test.grakn;
 
-import ai.grakn.graql.Var;
-import groovy.transform.ASTTest;
-import ldbc.snb.datagen.serializer.grakn.GraknInvariantSerializer;
+import ai.grakn.graql.VarPattern;
 import ldbc.snb.datagen.serializer.grakn.GraqlVarLoaderRESTImpl;
 import org.junit.Test;
 
@@ -27,7 +25,7 @@ public class GraknSerialiserTest {
             String randomUUID = UUID.randomUUID().toString();
 
             System.out.println("serializing tag: "+randomUUID);
-            Var tagConcept = var().isa("tag");
+            VarPattern tagConcept = var().isa("tag");
             tagConcept.has("snb-id", randomUUID);
             tagConcept.has("name", "test");
 
@@ -39,9 +37,9 @@ public class GraknSerialiserTest {
     public void sendARelationToEngineTest() {
         GraqlVarLoaderRESTImpl serializer = new GraqlVarLoaderRESTImpl("SNB");
 
-        Var person = var("acq1").isa("person").has("snb-id", UUID.randomUUID().toString());
-        Var knownPerson = var("acq2").isa("person").has("snb-id", UUID.randomUUID().toString());
-        Var relation = var().isa("knows").rel("acquaintance1", "acq1").rel("acquaintance2", "acq2");
+        VarPattern person = var("acq1").isa("person").has("snb-id", UUID.randomUUID().toString());
+        VarPattern knownPerson = var("acq2").isa("person").has("snb-id", UUID.randomUUID().toString());
+        VarPattern relation = var().isa("knows").rel("acquaintance1", "acq1").rel("acquaintance2", "acq2");
 
         serializer.sendQueries(Arrays.asList(insert(person, knownPerson, relation)));
     }
@@ -50,7 +48,7 @@ public class GraknSerialiserTest {
     public void serialiseActivityPostTest() {
         GraqlVarLoaderRESTImpl serializer = new GraqlVarLoaderRESTImpl("SNB");
 
-        Collection<Var> vars = new ArrayList<>();
+        Collection<VarPattern> vars = new ArrayList<>();
 
         vars.add(var("comment").isa("comment")
                 .has("snb-id", UUID.randomUUID().toString())
@@ -74,7 +72,7 @@ public class GraknSerialiserTest {
     public void serialiseActivityCommentTest(){
         GraqlVarLoaderRESTImpl serializer = new GraqlVarLoaderRESTImpl("SNB");
 
-        Collection<Var> vars = new ArrayList<>();
+        Collection<VarPattern> vars = new ArrayList<>();
 
         vars.add(var("comment").isa("comment")
                 .has("snb-id", UUID.randomUUID().toString())
@@ -100,9 +98,9 @@ public class GraknSerialiserTest {
     public void serialiseActivityLikeTest() {
         GraqlVarLoaderRESTImpl serializer = new GraqlVarLoaderRESTImpl("SNB");
 
-        Var person = var("person").isa("person").has("snb-id", UUID.randomUUID().toString());
-        Var comment = var("comment").isa("comment").has("snb-id", UUID.randomUUID().toString());
-        Var relation = var().isa("likes").rel("liker", "person").rel("liked", "comment");
+        VarPattern person = var("person").isa("person").has("snb-id", UUID.randomUUID().toString());
+        VarPattern comment = var("comment").isa("comment").has("snb-id", UUID.randomUUID().toString());
+        VarPattern relation = var().isa("likes").rel("liker", "person").rel("liked", "comment");
 
         serializer.sendQueries(Arrays.asList(insert(person,comment,relation)));
     }

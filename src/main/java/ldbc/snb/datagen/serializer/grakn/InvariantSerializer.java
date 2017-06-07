@@ -2,7 +2,7 @@ package ldbc.snb.datagen.serializer.grakn;
 
 import ai.grakn.Grakn;
 import ai.grakn.GraknGraph;
-import ai.grakn.graql.Var;
+import ai.grakn.graql.VarPattern;
 import com.google.common.collect.Lists;
 import ldbc.snb.datagen.objects.Organization;
 import ldbc.snb.datagen.objects.Place;
@@ -47,10 +47,10 @@ public class InvariantSerializer extends ldbc.snb.datagen.serializer.InvariantSe
         LOGGER.info("Serialising Tag");
         String snbIdTag = "tag-" + String.valueOf(tag.id);
 
-        Var tagConcept = var(snbIdTag).isa("tag").has("snb-id", snbIdTag);
+        VarPattern tagConcept = var(snbIdTag).isa("tag").has("snb-id", snbIdTag);
         flush(graph, Utility::putEntity, Collections.singletonList(tagConcept));
 
-        Var hasName = var(snbIdTag).has("name", String.valueOf(tag.name));
+        VarPattern hasName = var(snbIdTag).has("name", String.valueOf(tag.name));
         flush(graph, Utility::putRelation, Lists.newArrayList(hasName, var(snbIdTag).has("snb-id", snbIdTag)));
     }
 

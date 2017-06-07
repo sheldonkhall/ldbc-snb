@@ -1,7 +1,7 @@
 package ldbc.snb.datagen.serializer.grakn;
 
 import ai.grakn.Grakn;
-import ai.grakn.graql.Var;
+import ai.grakn.graql.VarPattern;
 import ldbc.snb.datagen.objects.Knows;
 import ldbc.snb.datagen.objects.Person;
 import ldbc.snb.datagen.objects.StudyAt;
@@ -11,7 +11,6 @@ import org.apache.hadoop.conf.Configuration;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
 
 import static ai.grakn.graql.Graql.insert;
 import static ai.grakn.graql.Graql.var;
@@ -44,7 +43,7 @@ public class GraknPersonSerializer extends PersonSerializer {
 
     @Override
     protected void serialize(Person p) {
-        Var personConcept = var().isa("person");
+        VarPattern personConcept = var().isa("person");
         personConcept.has("snb-id", Long.toString(p.accountId()));
         personConcept.has("first-name", String.valueOf(p.firstName() + " " + p.lastName()));
 
@@ -63,9 +62,9 @@ public class GraknPersonSerializer extends PersonSerializer {
 
     @Override
     protected void serialize(Person p, Knows knows) {
-        Var person = var("acq1").isa("person").has("snb-id", Long.toString(p.accountId()));
-        Var knownPerson = var("acq2").isa("person").has("snb-id", Long.toString(knows.to().accountId()));
-        Var relation = var().isa("knows").rel("acquaintance1", "acq1").rel("acquaintance2", "acq2");
+        VarPattern person = var("acq1").isa("person").has("snb-id", Long.toString(p.accountId()));
+        VarPattern knownPerson = var("acq2").isa("person").has("snb-id", Long.toString(knows.to().accountId()));
+        VarPattern relation = var().isa("knows").rel("acquaintance1", "acq1").rel("acquaintance2", "acq2");
 
         loader.sendQueries(Arrays.asList(insert(person, knownPerson, relation)));
     }

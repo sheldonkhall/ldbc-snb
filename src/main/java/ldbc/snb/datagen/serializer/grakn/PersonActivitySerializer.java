@@ -2,7 +2,7 @@ package ldbc.snb.datagen.serializer.grakn;
 
 import ai.grakn.Grakn;
 import ai.grakn.GraknGraph;
-import ai.grakn.graql.Var;
+import ai.grakn.graql.VarPattern;
 import com.google.common.collect.Lists;
 import ldbc.snb.datagen.objects.Comment;
 import ldbc.snb.datagen.objects.Forum;
@@ -63,9 +63,9 @@ public class PersonActivitySerializer extends ldbc.snb.datagen.serializer.Person
 
         String snbId = Long.toString(comment.messageId());
         String snbId2 = Long.toString(comment.replyOf());
-        Var commentConcept2 = var(snbId2).isa("comment").has("snb-id", snbId2);
+        VarPattern commentConcept2 = var(snbId2).isa("comment").has("snb-id", snbId2);
         flush(graph, Utility::putEntity, Collections.singletonList(commentConcept2));
-        Var reply = var().isa("reply")
+        VarPattern reply = var().isa("reply")
                 .rel("reply-content", snbId)
                 .rel("reply-owner", snbId2);
         flush(graph, Utility::putRelation, Lists.newArrayList(reply,
@@ -87,10 +87,10 @@ public class PersonActivitySerializer extends ldbc.snb.datagen.serializer.Person
         LOGGER.debug("Serialising Likes");
         String snbIdPerson = "person-" + Long.toString(like.user);
         String snbIdMessage = "message-" + Long.toString(like.messageId);
-        Var person = var(snbIdPerson).isa("person").has("snb-id", snbIdPerson);
+        VarPattern person = var(snbIdPerson).isa("person").has("snb-id", snbIdPerson);
         flush(graph, Utility::putEntity, Collections.singletonList(person));
 
-        Var relation = var().isa("likes")
+        VarPattern relation = var().isa("likes")
                 .rel("liker", snbIdPerson)
                 .rel("liked", snbIdMessage);
         flush(graph, Utility::putRelation, Lists.newArrayList(relation,
@@ -101,20 +101,20 @@ public class PersonActivitySerializer extends ldbc.snb.datagen.serializer.Person
     private void serialiseMessage(Message message) {
         String snbIdMessage = "message-" + Long.toString(message.messageId());
 
-        Var commentConcept = var(snbIdMessage).isa("comment").has("snb-id", snbIdMessage);
+        VarPattern commentConcept = var(snbIdMessage).isa("comment").has("snb-id", snbIdMessage);
         flush(graph, Utility::putEntity, Collections.singletonList(commentConcept));
 
-        Var hasResources = var(snbIdMessage)
+        VarPattern hasResources = var(snbIdMessage)
                 .has("content", message.content())
                 .has("creation-date", Long.toString(message.creationDate()));
         flush(graph, Utility::putRelation, Lists.newArrayList(hasResources,
                 var(snbIdMessage).has("snb-id", snbIdMessage)));
 
         String snbIdPerson = "person-" + Long.toString(message.author().accountId());
-        Var person = var(snbIdPerson).isa("person").has("snb-id", snbIdPerson);
+        VarPattern person = var(snbIdPerson).isa("person").has("snb-id", snbIdPerson);
         flush(graph, Utility::putEntity, Collections.singletonList(person));
 
-        Var hasCreator = var().isa("writes")
+        VarPattern hasCreator = var().isa("writes")
                 .rel("writer", snbIdPerson)
                 .rel("written", snbIdMessage);
         flush(graph, Utility::putRelation, Lists.newArrayList(hasCreator,
@@ -123,10 +123,10 @@ public class PersonActivitySerializer extends ldbc.snb.datagen.serializer.Person
 
         for (Integer t : message.tags()) {
             String snbIdTag = "tag-" + Integer.toString(t);
-            Var tagConcept = var(snbIdTag).isa("tag").has("snb-id", snbIdTag);
+            VarPattern tagConcept = var(snbIdTag).isa("tag").has("snb-id", snbIdTag);
             flush(graph, Utility::putEntity, Collections.singletonList(tagConcept));
 
-            Var tagging = var().isa("tagging")
+            VarPattern tagging = var().isa("tagging")
                     .rel("tagged-subject", snbIdMessage)
                     .rel("subject-tag", snbIdTag);
             flush(graph, Utility::putRelation, Lists.newArrayList(tagging,

@@ -2,7 +2,7 @@ package ldbc.snb.datagen.serializer.grakn;
 
 import ai.grakn.Grakn;
 import ai.grakn.GraknGraph;
-import ai.grakn.graql.Var;
+import ai.grakn.graql.VarPattern;
 import com.google.common.collect.Lists;
 import ldbc.snb.datagen.objects.Knows;
 import ldbc.snb.datagen.objects.Person;
@@ -47,10 +47,10 @@ public class PersonSerializer extends ldbc.snb.datagen.serializer.PersonSerializ
         LOGGER.debug("Serialising Person");
         String snbIdPerson = "person-" + Long.toString(p.accountId());
 
-        Var personConcept = var(snbIdPerson).isa("person").has("snb-id", snbIdPerson);
+        VarPattern personConcept = var(snbIdPerson).isa("person").has("snb-id", snbIdPerson);
         flush(graph, Utility::putEntity, Collections.singletonList(personConcept));
 
-        Var hasName = var(snbIdPerson).has("first-name", String.valueOf(p.firstName()));
+        VarPattern hasName = var(snbIdPerson).has("first-name", String.valueOf(p.firstName()));
         flush(graph, Utility::putRelation, Lists.newArrayList(hasName, var(snbIdPerson).has("snb-id", snbIdPerson)));
     }
 
@@ -69,10 +69,10 @@ public class PersonSerializer extends ldbc.snb.datagen.serializer.PersonSerializ
         LOGGER.debug("Serialising Knows");
         String snbIdPerson1 = "person-" + Long.toString(p.accountId());
         String snbIdPerson2 = "person-" + Long.toString(knows.to().accountId());
-        Var knownPerson = var(snbIdPerson2).isa("person").has("snb-id", snbIdPerson2);
+        VarPattern knownPerson = var(snbIdPerson2).isa("person").has("snb-id", snbIdPerson2);
         flush(graph, Utility::putEntity, Collections.singletonList(knownPerson));
 
-        Var relation = var().isa("knows")
+        VarPattern relation = var().isa("knows")
                 .rel("acquaintance1", snbIdPerson1)
                 .rel("acquaintance2", snbIdPerson2);
         flush(graph, Utility::putRelation, Lists.newArrayList(relation,

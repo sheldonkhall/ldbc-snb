@@ -1,8 +1,7 @@
 package ldbc.snb.datagen.serializer.grakn;
 
 import ai.grakn.Grakn;
-import ai.grakn.graql.Var;
-import ai.grakn.graql.internal.pattern.Patterns;
+import ai.grakn.graql.VarPattern;
 import ldbc.snb.datagen.objects.Organization;
 import ldbc.snb.datagen.objects.Place;
 import ldbc.snb.datagen.objects.Tag;
@@ -42,8 +41,8 @@ public class GraknInvariantSerializer extends InvariantSerializer {
     }
 
     protected void serialize(final Tag tag) {
-        Var tagConcept = var("tagConcept").isa("tag").has("snb-id", String.valueOf(tag.id));
-        Var tagConceptWithName = var("tagConcept").has("name", String.valueOf(tag.name));
+        VarPattern tagConcept = var("tagConcept").isa("tag").has("snb-id", String.valueOf(tag.id));
+        VarPattern tagConceptWithName = var("tagConcept").has("name", String.valueOf(tag.name));
 
         // If the tag is not in a relationship it is currently ignored.
         loader.sendQueries(Arrays.asList(match(tagConcept).insert(tagConceptWithName)));

@@ -1,7 +1,7 @@
 package ldbc.snb.datagen.serializer.grakn;
 
 import ai.grakn.Grakn;
-import ai.grakn.graql.Var;
+import ai.grakn.graql.VarPattern;
 import ldbc.snb.datagen.objects.Comment;
 import ldbc.snb.datagen.objects.Forum;
 import ldbc.snb.datagen.objects.ForumMembership;
@@ -52,14 +52,14 @@ public class GraknPersonActivitySerializer extends PersonActivitySerializer {
 
     @Override
     protected void serialize(Post post) {
-        Collection<Var> vars = new ArrayList<>();
+        Collection<VarPattern> vars = new ArrayList<>();
 
         vars.add(var("comment").isa("comment")
                 .has("snb-id", Long.toString(post.messageId()))
                 .has("content", post.content())
                 .has("creation-date", Long.toString(post.creationDate())));
 
-        Var existingAuthor = var("author").isa("person").has("snb-id", Long.toString(post.author().accountId()));
+        VarPattern existingAuthor = var("author").isa("person").has("snb-id", Long.toString(post.author().accountId()));
 
         vars.add(var().isa("writes").rel("writer", "author").rel("written", "comment"));
 
@@ -74,7 +74,7 @@ public class GraknPersonActivitySerializer extends PersonActivitySerializer {
 
     @Override
     protected void serialize(Comment comment) {
-        Collection<Var> vars = new ArrayList<>();
+        Collection<VarPattern> vars = new ArrayList<>();
 
         vars.add(var("comment").isa("comment")
                 .has("snb-id", Long.toString(comment.messageId()))
@@ -85,7 +85,7 @@ public class GraknPersonActivitySerializer extends PersonActivitySerializer {
 
         vars.add(var().isa("reply").rel("reply-owner","original-comment").rel("reply-content","comment"));
 
-        Var existingAuthor = var("author").isa("person").has("snb-id", Long.toString(comment.author().accountId()));
+        VarPattern existingAuthor = var("author").isa("person").has("snb-id", Long.toString(comment.author().accountId()));
 
         for( Integer t : comment.tags() ) {
             vars.add(var("tag-"+t.toString()).isa("tag").has("snb-id", t.toString()));
@@ -108,9 +108,9 @@ public class GraknPersonActivitySerializer extends PersonActivitySerializer {
 
     @Override
     protected void serialize(Like like) {
-        Var person = var("person").isa("person").has("snb-id", Long.toString(like.user));
-        Var comment = var("comment").isa("comment").has("snb-id", Long.toString(like.messageId));
-        Var relation = var().isa("likes").rel("liker", "person").rel("liked", "comment");
+        VarPattern person = var("person").isa("person").has("snb-id", Long.toString(like.user));
+        VarPattern comment = var("comment").isa("comment").has("snb-id", Long.toString(like.messageId));
+        VarPattern relation = var().isa("likes").rel("liker", "person").rel("liked", "comment");
 
         loader.sendQueries(Arrays.asList(match(person).insert(comment,relation)));
     }
