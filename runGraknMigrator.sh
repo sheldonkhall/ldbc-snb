@@ -9,10 +9,9 @@ GRAQL=$SCRIPTPATH/./graql
 $SCRIPTPATH/run.sh
 
 # load ontology
-graql.sh -k $2 -f $GRAQL/ldbc-snb-1-resources.gql -r $1
-graql.sh -k $2 -f $GRAQL/ldbc-snb-2-relations.gql -r $1
-graql.sh -k $2 -f $GRAQL/ldbc-snb-3-entities.gql -r $1
-graql.sh -k $2 -f $GRAQL/ldbc-snb-4-rules.gql -r $1
+
+cat $GRAQL/ldbc-snb-1-resources.gql $GRAQL/ldbc-snb-2-relations.gql $GRAQL/ldbc-snb-3-entities.gql $GRAQL/ldbc-snb-4-rules.gql > $GRAQL/full-ontology.gql
+graql.sh -k $2 -f $GRAQL/full-ontology.gql -r $1
 
 sed -i '' "1s/Comment.id|Comment.id/Comment.id|Message.id/" $DATA/comment_replyOf_comment_0_0.csv
 sed -i '' "1s/Person.id|Person.id/Person1.id|Person.id/" $DATA/person_knows_person_0_0.csv
